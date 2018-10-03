@@ -1,0 +1,7 @@
+D:\Google Drive\KI\Thesis\Calcudoku\C#\Calcudoku Solver\Calcudoku Solver\bin\Debug\Calcudoku Solver.exe.config
+D:\Google Drive\KI\Thesis\Calcudoku\C#\Calcudoku Solver\Calcudoku Solver\bin\Debug\Calcudoku Solver.exe
+D:\Google Drive\KI\Thesis\Calcudoku\C#\Calcudoku Solver\Calcudoku Solver\bin\Debug\Calcudoku Solver.pdb
+D:\Google Drive\KI\Thesis\Calcudoku\C#\Calcudoku Solver\Calcudoku Solver\obj\Debug\Calcudoku Solver.csprojResolveAssemblyReference.cache
+D:\Google Drive\KI\Thesis\Calcudoku\C#\Calcudoku Solver\Calcudoku Solver\obj\Debug\Calcudoku Solver.exe
+D:\Google Drive\KI\Thesis\Calcudoku\C#\Calcudoku Solver\Calcudoku Solver\obj\Debug\Calcudoku Solver.pdb
+D:\Google Drive\KI\Thesis\Calcudoku\C#\Calcudoku Solver\Calcudoku Solver\bin\Debug\KillerSudokuSolver.exe.config
