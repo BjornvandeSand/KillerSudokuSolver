@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace KillerSudokuSolver
 {
-    partial class Program
+    partial class KillerSudokuSolver
     {
         class Row : House
         {

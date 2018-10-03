@@ -2,7 +2,7 @@
 
 namespace KillerSudokuSolver
 {
-    partial class Program
+    partial class KillerSudokuSolver
     {
         class Cell
         {

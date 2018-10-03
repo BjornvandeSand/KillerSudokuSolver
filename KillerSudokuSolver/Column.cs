@@ -1,6 +1,6 @@
 ﻿namespace KillerSudokuSolver
 {
-    partial class Program
+    partial class KillerSudokuSolver
     {
         class Column : House
         {

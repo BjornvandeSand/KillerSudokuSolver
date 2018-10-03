@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace KillerSudokuSolver
 {
-	partial class Program
+	partial class KillerSudokuSolver
 	{
 		static void Main(string[] args)
 		{
-			Console.WriteLine("*Killer Sudoku solver 0.3*");
+			Console.WriteLine("*Killer Sudoku solver*");
 
 			KillerSudoku puzzle = parser("1.txt");
 			Console.WriteLine("Puzzle loaded");
