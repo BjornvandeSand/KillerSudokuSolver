@@ -12,3 +12,10 @@ E:\Google Drive\KI\Thesis\KillerSudoku\C#\KillerSudokuSolver\KillerSudokuSolver\
 E:\Google Drive\KI\Thesis\KillerSudoku\C#\KillerSudokuSolver\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.pdb
 D:\Google Drive\KI\Thesis\KillerSudoku\C#\KillerSudokuSolver\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.csprojAssemblyReference.cache
 D:\Google Drive\KI\Thesis\KillerSudoku\C#\KillerSudokuSolver\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.csproj.CoreCompileInputs.cache
+C:\Users\Citadel\Source\Repos\BjornvandeSand\KillerSudokuSolver\KillerSudokuSolver\bin\Debug\KillerSudokuSolver.exe.config
+C:\Users\Citadel\Source\Repos\BjornvandeSand\KillerSudokuSolver\KillerSudokuSolver\bin\Debug\KillerSudokuSolver.exe
+C:\Users\Citadel\Source\Repos\BjornvandeSand\KillerSudokuSolver\KillerSudokuSolver\bin\Debug\KillerSudokuSolver.pdb
+C:\Users\Citadel\Source\Repos\BjornvandeSand\KillerSudokuSolver\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.csprojAssemblyReference.cache
+C:\Users\Citadel\Source\Repos\BjornvandeSand\KillerSudokuSolver\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.csproj.CoreCompileInputs.cache
+C:\Users\Citadel\Source\Repos\BjornvandeSand\KillerSudokuSolver\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.exe
+C:\Users\Citadel\Source\Repos\BjornvandeSand\KillerSudokuSolver\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.pdb

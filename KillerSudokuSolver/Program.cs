@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace KillerSudokuSolver
 {
-	class Program
+	partial class Program
 	{
 		static void Main(string[] args)
 		{
@@ -14,7 +13,7 @@ namespace KillerSudokuSolver
 			KillerSudoku puzzle = parser("1.txt");
 			Console.WriteLine("Puzzle loaded");
 
-			puzzle.verify();
+			puzzle.Verify();
 			Console.WriteLine("Puzzle verified");
 
 			puzzle.solve();
@@ -22,7 +21,7 @@ namespace KillerSudokuSolver
 
 			Console.WriteLine(puzzle);
 
-            /*foreach (int n in puzzle.grid[5, 0].PossibleValues)
+            /*foreach (int n in puzzle.grid[0, 0].PossibleValues)
             {
                 Console.WriteLine(n);
             }*/
@@ -31,7 +30,7 @@ namespace KillerSudokuSolver
 		}
 
         //Parses all the required info to build a Killer Sudoku and hands it to the constructor
-        static KillerSudoku parser(string file) {
+         static KillerSudoku parser(string file) {
 			KillerSudoku output = null;
 
 			try
@@ -79,6 +78,11 @@ namespace KillerSudokuSolver
 
 						//Handles the cage parameters on the line
 						cages[i] = new Cage(cageCells, int.Parse(splitLine[counter * 2]), splitLine[counter * 2 + 1][0]);
+
+                        foreach(Cell cell in cageCells)
+                        {
+                            cell.Cage = cages[i];
+                        }
 					}
 
 					totalCellCounter /= 2;
@@ -228,7 +232,7 @@ namespace KillerSudokuSolver
 			}
 
             //Does a number of basic checks to see if there are likely errors in the parsed puzzle
-			public void verify()
+			public void Verify()
 			{
                 //Checks if any position in the Grid doesn't have an initialized Cell
 				foreach (Cell cell in grid)
@@ -343,111 +347,6 @@ namespace KillerSudokuSolver
 				}
 
 				return output;
-			}
-		}
-
-		class Cell
-		{
-			public int Value {get; set;}
-
-			public HashSet<int> PossibleValues { get; set; } //The Values that are still possible for this Cell
-
-			Column Column {get; set;}
-
-			Row Row {get; set;}
-
-			Cage Cage {get; set;}
-
-			public Cell(int n)
-			{
-                Value = 0;
-				PossibleValues = new HashSet<int>();
-
-				for (int i = 1; i <= n; i++)
-				{
-					PossibleValues.Add(i);
-				}
-			}
-
-			public override string ToString()
-			{
-				return Value.ToString();
-			}
-		}
-
-        abstract class House {
-            public int Goal { get; set; }
-            public int Id { get; set; }
-
-            public Cell[] Cells { get; set; }
-        }
-
-		class Row : House
-		{
-			public Row(int y, Cell[] z, int n) {
-				Id = y;
-				Cells = z;
-                Goal = n;
-			}
-			
-			public override string ToString()
-			{
-				string output = Id + 1 + String.Concat(Enumerable.Repeat(" ", Cells.Length.ToString().Length - Id.ToString().Length + 1)) + "| ";
-				int maxLength = Cells.Length.ToString().Length;
-
-				string cellOutput;
-
-				foreach (Cell cell in Cells)
-				{
-					cellOutput = cell.ToString();
-					output += cellOutput + String.Concat(Enumerable.Repeat(" ", maxLength - cellOutput.Length + 1));
-				}
-
-				output += "| " + (Id + 1) + Environment.NewLine;
-
-				return output;
-			}
-		}
-
-		class Column : House
-		{
-			public Column(int x, Cell[] z, int n)
-			{
-				Id = x;
-				Cells = z;
-                Goal = n;
-            }
-		}
-
-		class Diagonal : House
-		{
-			public Diagonal(int x, Cell[] z, int n)
-			{
-				Id = x;
-				Cells = z;
-                Goal = n;
-            }
-		}
-
-		class Nonet : House {
-			Cell[] cells;
-
-			public Nonet(Cell[] c, int n)
-			{
-				cells = c;
-                Goal = n;
-            }
-		}
-
-		class Cage : House
-		{
-			char type;
-
-			public Cage(Cell[] x, int n, char o)
-			{
-				Cells = x;
-				Goal = n;
-				type = o;
 			}
 		}
 	}
