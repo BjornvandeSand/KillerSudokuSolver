@@ -21,10 +21,10 @@ namespace KillerSudokuSolver
 
 			Console.WriteLine(puzzle);
 
-            /*foreach (int n in puzzle.grid[0, 0].PossibleValues)
+            foreach (int n in puzzle.grid[8, 1].PossibleValues)
             {
-                Console.WriteLine(n);
-            }*/
+                Console.Write(n + " ");
+            }
 
             Console.Read();
 		}
@@ -56,7 +56,7 @@ namespace KillerSudokuSolver
 					Cell tempCell;
 					Cell[] cageCells;
 
-					//Make all the cells and cages
+					//Make all the Cells and Cages
 					for (int i = 0; i < cagesAmount; i++)
 					{
 						splitLine = sr.ReadLine().Split(' ');
@@ -66,7 +66,7 @@ namespace KillerSudokuSolver
 
 						counter = 0;
 
-						//Handles the cell info on the line
+						//Handles the Cell info on the line
 						while (counter * 2 < cellsInLine)
 						{
 							tempCell = new Cell(maxValue);
@@ -76,8 +76,8 @@ namespace KillerSudokuSolver
 							counter++;
 						}
 
-						//Handles the cage parameters on the line
-						cages[i] = new Cage(cageCells, int.Parse(splitLine[counter * 2]), splitLine[counter * 2 + 1][0]);
+						//Handles the Cage parameters on the line
+						cages[i] = new Cage(i, cageCells, int.Parse(splitLine[counter * 2]), splitLine[counter * 2 + 1][0]);
 
                         foreach(Cell cell in cageCells)
                         {
@@ -278,15 +278,19 @@ namespace KillerSudokuSolver
                                 {
                                     change = true;
                                     cell.PossibleValues.Remove(i);
+
+                                    if(cell.PossibleValues.Count == 1)
+                                    {
+                                        cell.Value = cell.PossibleValues.ElementAt(0);
+                                    }
                                 }
                             }
                         }
                     }
 
                     //This part removes possible Values that are too low
-                    min = (cage.Goal - (((cage.Cells.Length - 1) / 2) * ((maxValue - cage.Cells.Length + 1) + maxValue)));
-                    Console.WriteLine(min);
-
+                    min = cage.Goal - ((cage.Cells.Length - 1) * (maxValue - (cage.Cells.Length - 1) + 1 + maxValue) / 2);
+                    
                     if (min > 0) //Determines if there's any possible Values high enough to cull
                     {
                         foreach (Cell cell in cage.Cells)
@@ -298,11 +302,14 @@ namespace KillerSudokuSolver
                                     change = true;
                                     cell.PossibleValues.Remove(i);
                                 }
+
+                                if (cell.PossibleValues.Count == 1)
+                                {
+                                    cell.Value = cell.PossibleValues.ElementAt(0);
+                                }
                             }
                         }
                     }
-
-                    //return change;
                 }
 			}
 

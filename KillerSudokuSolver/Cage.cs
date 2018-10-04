@@ -6,8 +6,9 @@
         {
             char type;
 
-            public Cage(Cell[] x, int n, char o)
+            public Cage(int id, Cell[] x, int n, char o)
             {
+                Id = id;
                 Cells = x;
                 Goal = n;
                 type = o;

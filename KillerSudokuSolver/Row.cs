@@ -10,8 +10,8 @@ namespace KillerSudokuSolver
             public Row(int y, Cell[] z, int n)
             {
                 Id = y;
-                Cells = z;
                 Goal = n;
+                Cells = z;
             }
 
             public override string ToString()

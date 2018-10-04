@@ -4,12 +4,11 @@ namespace KillerSudokuSolver
     {
 		class Nonet : House
         {
-            Cell[] cells;
 
             public Nonet(Cell[] c, int n)
             {
-                cells = c;
                 Goal = n;
+                Cells = c;
             }
         }
 	}
