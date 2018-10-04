@@ -10,21 +10,16 @@ namespace KillerSudokuSolver
 		{
 			Console.WriteLine("*Killer Sudoku solver*");
 
-			KillerSudoku puzzle = parser("1.txt");
+			KillerSudoku puzzle = parser("2.txt");
 			Console.WriteLine("Puzzle loaded");
 
 			puzzle.Verify();
 			Console.WriteLine("Puzzle verified");
 
 			puzzle.solve();
-		    //Console.WriteLine("Puzzle solved");
+		    Console.WriteLine("Puzzle solved");
 
 			Console.WriteLine(puzzle);
-
-            foreach (int n in puzzle.grid[8, 1].PossibleValues)
-            {
-                Console.Write(n + " ");
-            }
 
             Console.Read();
 		}
@@ -77,7 +72,7 @@ namespace KillerSudokuSolver
 						}
 
 						//Handles the Cage parameters on the line
-						cages[i] = new Cage(i, cageCells, int.Parse(splitLine[counter * 2]), splitLine[counter * 2 + 1][0]);
+						cages[i] = new Cage(i, cageCells, int.Parse(splitLine[counter * 2]), splitLine[counter * 2 + 1][0], maxValue);
 
                         foreach(Cell cell in cageCells)
                         {
@@ -117,7 +112,7 @@ namespace KillerSudokuSolver
 			int dimension;
 			Cage[] cages;
 
-			//The constructor not only builds the Killer Sudoko itself, but initializes and interconnects all its components
+			//The constructor not only builds the KillerSudoko itself, but initializes and interconnects all its components
 			public KillerSudoku(Cell[,] g, int n, int nn, Cage[] c, bool b)
 			{
 				dimension = n;
@@ -150,7 +145,12 @@ namespace KillerSudokuSolver
 				Cell[] tempDiagonal1 = new Cell[maxValue];
 				Cell[] tempDiagonal2 = new Cell[maxValue];
 
-				for (int y = 0; y < maxValue; y++)
+                foreach (Cage cage in cages) {
+                    houses[counter] = cage;
+                    counter++;
+                }
+
+                for (int y = 0; y < maxValue; y++)
 				{
 					tempRow = new Cell[maxValue];
 
@@ -174,8 +174,14 @@ namespace KillerSudokuSolver
 							}
 						}
 					}
+                    
+					rows[y] = new Row(y, tempRow, houseSum, maxValue);
 
-					rows[y] = new Row(y, tempRow, houseSum);
+                    foreach(Cell cell in tempRow)
+                    {
+                        cell.Row = rows[y];
+                    }
+
 					houses[counter] = rows[y];
 					counter++;
 				}
@@ -190,26 +196,46 @@ namespace KillerSudokuSolver
 						tempColumn[y] = grid[x, y];
 					}
 
-					columns[x] = new Column(x, tempColumn, houseSum);
-					houses[counter] = columns[x];
+					columns[x] = new Column(x, tempColumn, houseSum, maxValue);
+
+                    foreach (Cell cell in tempColumn)
+                    {
+                        cell.Column = columns[x];
+                    }
+
+                    houses[counter] = columns[x];
 					counter++;
 				}
 
                 //Adds the Diagonals if this is a KillerX Sudoku
 				if (killerX)
 				{
-					Diagonal tempDiagonal = new Diagonal(0, tempDiagonal1, houseSum);
-					diagonals[0] = tempDiagonal;
+					Diagonal tempDiagonal = new Diagonal(0, tempDiagonal1, houseSum, maxValue);
+
+                    foreach (Cell cell in tempDiagonal.Cells)
+                    {
+                        cell.Diagional = tempDiagonal;
+                    }
+
+                    diagonals[0] = tempDiagonal;
 					houses[counter] = tempDiagonal;
 					counter++;
-					tempDiagonal = new Diagonal(1, tempDiagonal2, houseSum);
-					diagonals[1] = tempDiagonal;
+
+					tempDiagonal = new Diagonal(1, tempDiagonal2, houseSum, maxValue);
+
+                    foreach (Cell cell in tempDiagonal.Cells)
+                    {
+                        cell.Diagional = tempDiagonal;
+                    }
+
+                    diagonals[1] = tempDiagonal;
 					houses[counter] = tempDiagonal;
 					counter++;
 				}
 
 				Cell[] tempCells = new Cell[maxValue];
-				int cellCounter = 0;
+                Nonet tempNonet;
+                int cellCounter = 0;
 
                 //Walk through all Cells in the Grid Nonet by Nonet and create these Nonet objects
 				for (int xFactor = 0; xFactor < maxValue; xFactor += dimension)
@@ -225,9 +251,18 @@ namespace KillerSudokuSolver
 							}
 						}
 
-						nonets[xFactor / dimension,yFactor / dimension] = new Nonet(tempCells, houseSum);
-						cellCounter = 0;
-					}
+                        tempNonet = new Nonet(tempCells, houseSum, maxValue);
+                        nonets[xFactor / dimension, yFactor / dimension] = tempNonet;
+                        cellCounter = 0;
+
+                        foreach(Cell cell in tempCells)
+                        {
+                            cell.Nonet = tempNonet;
+                        }
+
+                        houses[counter] = tempNonet;
+                        counter++;
+                    }
 				}
 			}
 
@@ -254,64 +289,55 @@ namespace KillerSudokuSolver
                 //and checks if they equal what the sum of all PossibleValues should be
 				if (sum != maxValue * houseSum)
 				{
-					Console.WriteLine("Sum of cages doesn't add up to required sum of cells");
+					Console.WriteLine("Sum of Cages doesn't add up to required sum of Grid");
 				}
-			}
+
+                //Checks if any Houses are too large
+                foreach (House house in houses)
+                {
+                    if(house.Cells.Length > maxValue)
+                    {
+                        Console.WriteLine("There is a House too large for Dimension");
+                    }
+                }
+            }
 
 			public void solve() {
-                bool change = false; //Keeps track of whether this call changed anything
-                int max; //The largest possible value for this cage
-                int min; //The smallest possible value for this cage
-
                 foreach (Cage cage in cages)
                 {
-                    //This part removes possible Values that are are too high
-                    max = cage.Goal - cage.Cells.Length * (cage.Cells.Length - 1) / 2; //Determine the maximum Value allowed in this Cage
+                    removeHighLow(cage);
+                }
+			}
 
+            public void removeHighLow(Cage cage)
+            {
+                int max; //The largest possible value for this Cage
+                int min; //The smallest possible value for this Cage
+            
+                max = cage.Goal - cage.Cells.Length * (cage.Cells.Length - 1) / 2; //Determine the maximum Value allowed in this Cage
+                min = cage.Goal - ((cage.Cells.Length - 1) * (maxValue - (cage.Cells.Length - 1) + 1 + maxValue) / 2); //Determine the minimum Value allowed in this Cage
+
+                foreach (Cell cell in cage.Cells)
+                {
+                    //This part removes possible Values that are are too high
                     if (max < maxValue) //Determines if there's any possible Values low enough to cull
                     {
-                        foreach (Cell cell in cage.Cells)
+                        for (int i = max + 1; i <= maxValue; i++)
                         {
-                            for (int i = max + 1; i <= maxValue; i++)
-                            {
-                                if (cell.PossibleValues.Contains(i))
-                                {
-                                    change = true;
-                                    cell.PossibleValues.Remove(i);
-
-                                    if(cell.PossibleValues.Count == 1)
-                                    {
-                                        cell.Value = cell.PossibleValues.ElementAt(0);
-                                    }
-                                }
-                            }
+                            cell.removeOption(i);
                         }
                     }
 
                     //This part removes possible Values that are too low
-                    min = cage.Goal - ((cage.Cells.Length - 1) * (maxValue - (cage.Cells.Length - 1) + 1 + maxValue) / 2);
-                    
                     if (min > 0) //Determines if there's any possible Values high enough to cull
                     {
-                        foreach (Cell cell in cage.Cells)
+                        for (int i = min - 1; i > 0; i--)
                         {
-                            for (int i = min - 1; i > 0; i--)
-                            {
-                                if (cell.PossibleValues.Contains(i))
-                                {
-                                    change = true;
-                                    cell.PossibleValues.Remove(i);
-                                }
-
-                                if (cell.PossibleValues.Count == 1)
-                                {
-                                    cell.Value = cell.PossibleValues.ElementAt(0);
-                                }
-                            }
+                            cell.removeOption(i);
                         }
                     }
                 }
-			}
+            }
 
 			public override string ToString()
 			{

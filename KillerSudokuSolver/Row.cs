@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace KillerSudokuSolver
@@ -7,11 +8,18 @@ namespace KillerSudokuSolver
     {
         class Row : House
         {
-            public Row(int y, Cell[] z, int n)
+            public Row(int y, Cell[] c, int n, int maxValue)
             {
                 Id = y;
                 Goal = n;
-                Cells = z;
+                Cells = c;
+
+                possibleValues = new HashSet<int>();
+
+                for (int i = 1; i <= maxValue; i++)
+                {
+                    possibleValues.Add(i);
+                }
             }
 
             public override string ToString()
