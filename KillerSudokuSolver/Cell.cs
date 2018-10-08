@@ -36,27 +36,21 @@ namespace KillerSudokuSolver
                 }
             }
 
-            public void RemoveOption(int i)
-            {
-                if (PossibleValues.Contains(i))
-                {
-                    PossibleValues.Remove(i);
-                    Evaluate();
-                }
-            }
-
             void Evaluate()
             {
                 if (PossibleValues.Count == 1)
                 {
-                    Value = PossibleValues.ElementAt(0);
-                    Cage.RemoveOption(Value); //Tell the Cage to remove the Value from all other Cells
-                    Row.RemoveOption(Value); //Tell the Row to remove the Value from all other Cells
-                    Column.RemoveOption(Value); //Tell the Column to remove the Value from all other Cells
-                    Nonet.RemoveOption(Value); //Tell the Nonet to remove the Value from all other Cells
+                    Value = PossibleValues.ElementAt(0); //Set the final Value
+
+                    //Remove this possible Value from all other Houses associated with this Cell
+                    foreach (House house in Houses)
+                    {
+                        house.RemoveOption(Value);
+                    }
                 }
             }
 
+            //Provides a String representation of this Cell for easy printing
             public override string ToString()
             {
                 return Value.ToString();

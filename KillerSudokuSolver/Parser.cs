@@ -82,11 +82,16 @@ namespace KillerSudokuSolver
                         }
                     }
 
+                    if (sr.ReadLine() != null)
+                    {
+                        Console.WriteLine("The parsed file contains more than the stated " + cagesAmount + " cages.");
+                    }
+
                     totalCellCounter /= 2;
 
                     if (totalCellCounter != dimension * dimension * dimension * dimension)
                     {
-                        Console.WriteLine("The amount of cells in the parsed file doesn't match the required amount." + totalCellCounter);
+                        Console.WriteLine("The amount of Cells in the parsed file doesn't match the required amount." + totalCellCounter);
                     }
 
                     //Build the Killer Sudoku based on the parsed input

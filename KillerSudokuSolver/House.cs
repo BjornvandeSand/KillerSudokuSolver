@@ -17,10 +17,7 @@ namespace KillerSudokuSolver
             {
                 foreach (Cell cell in Cells)
                 {
-                    if (possibleValues.Contains(i))
-                    {
-                        cell.RemoveOption(i);
-                    }
+                    cell.PossibleValues.Remove(i);
                 }
             }
         }

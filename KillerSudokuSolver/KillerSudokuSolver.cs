@@ -229,6 +229,7 @@ namespace KillerSudokuSolver
                 }
             }
 
+            //Solves this puzzle through a Priority Queue and several possible steps
 			public void Solve() {
                 List<SolveStep> priorityQueue = new List<SolveStep>();
 
@@ -254,13 +255,13 @@ namespace KillerSudokuSolver
                 }
 			}
 
-            public void RemoveHighLow(Cage cage)
+            //Removes Values that are too high or low to be possible with the Cage's sum and returns affeced Cells
+            public List<Cell> RemoveHighLow(Cage cage)
             {
-                int max; //The largest possible value for this Cage
-                int min; //The smallest possible value for this Cage
-            
-                max = cage.Goal - cage.Cells.Length * (cage.Cells.Length - 1) / 2; //Determine the maximum Value allowed in this Cage
-                min = cage.Goal - ((cage.Cells.Length - 1) * (maxValue - (cage.Cells.Length - 1) + 1 + maxValue) / 2); //Determine the minimum Value allowed in this Cage
+                List<Cell> output = new List<Cell>(cage.Cells.Length);
+
+                int max = cage.Goal - cage.Cells.Length * (cage.Cells.Length - 1) / 2; //Determine the maximum Value allowed in this Cage
+                int min = cage.Goal - ((cage.Cells.Length - 1) * (maxValue - (cage.Cells.Length - 1) + 1 + maxValue) / 2); //Determine the minimum Value allowed in this Cage
 
                 foreach (Cell cell in cage.Cells)
                 {
@@ -269,7 +270,16 @@ namespace KillerSudokuSolver
                     {
                         for (int i = max + 1; i <= maxValue; i++)
                         {
-                            cell.RemoveOption(i);
+                            //Check if this Value is still listed as possible for the Cell
+                            if (cell.PossibleValues.Contains(i))
+                            {
+                                cell.PossibleValues.Remove(i); //Remove it
+
+                                if (!output.Contains(cell)) //Check if this Cell isn't listed as one that should be evaluated
+                                {
+                                    output.Add(cell); //Add it to the list of upcoming evaluations
+                                }
+                            }
                         }
                     }
 
@@ -278,12 +288,24 @@ namespace KillerSudokuSolver
                     {
                         for (int i = min - 1; i > 0; i--)
                         {
-                            cell.RemoveOption(i);
+                            //Check if this Value is still listed as possible for the Cell
+                            if (cell.PossibleValues.Contains(i))
+                            {
+                                cell.PossibleValues.Remove(i); //Remove it
+
+                                if (!output.Contains(cell)) //Check if this Cell isn't listed as one that should be evaluated
+                                {
+                                    output.Add(cell); //Add it to the list of upcoming evaluations
+                                }
+                            }
                         }
                     }
                 }
+
+                return output; //Return the list of upcoming Cells to evaluate
             }
 
+            //Creates a String representation of the puzzle for easy printing
 			public override string ToString()
 			{
 				int whiteSpaceLength = (maxValue - 1).ToString().Length;

@@ -8,14 +8,17 @@ namespace KillerSudokuSolver
         class SolveStep : IComparable
         {
             readonly House target;
+            //readonly function step
             readonly float priority;
 
             public SolveStep(House target, float priority)
             {
                 this.target = target;
+                //this.step = function;
                 this.priority = priority;
             }
 
+            //Executes the Step this object contains on the House it contains and returns a list of affected Cells
             public List<Cell> Execute()
             {
                 List<Cell> output = new List<Cell>();
@@ -24,6 +27,7 @@ namespace KillerSudokuSolver
                 return output;
             }
 
+            //Allows the sorting of Steps based on their priority
             public int CompareTo(object obj)
             {
                 SolveStep step = obj as SolveStep;
