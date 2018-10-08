@@ -13,13 +13,13 @@ namespace KillerSudokuSolver
             public Cell[] Cells { get; set; }
 
             //Removes this option from all Cells in the House
-            public void removeOption(int i)
+            public void RemoveOption(int i)
             {
                 foreach (Cell cell in Cells)
                 {
                     if (possibleValues.Contains(i))
                     {
-                        cell.removeOption(i);
+                        cell.RemoveOption(i);
                     }
                 }
             }

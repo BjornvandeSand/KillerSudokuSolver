@@ -6,14 +6,14 @@ namespace KillerSudokuSolver
     {
         class Cage : House
         {
-            char type;
+            readonly char type;
 
-            public Cage(int id, Cell[] c, int n, char o, int maxValue)
+            public Cage(int id, Cell[] c, int n, char type, int maxValue)
             {
                 Id = id;
                 Cells = c;
                 Goal = n;
-                type = o;
+                this.type = type;
 
                 possibleValues = new HashSet<int>();
 

@@ -22,10 +22,13 @@ namespace KillerSudokuSolver
 
             public Diagonal Diagional { get; set; }
 
-            public Cell(int maxValue)
+            public House[] Houses { get; set; }
+
+            public Cell(int maxValue, int housesAmount)
             {
                 Value = 0;
                 PossibleValues = new HashSet<int>();
+                Houses = new House[housesAmount];
 
                 for (int i = 1; i <= maxValue; i++)
                 {
@@ -33,24 +36,24 @@ namespace KillerSudokuSolver
                 }
             }
 
-            public void removeOption(int i)
+            public void RemoveOption(int i)
             {
                 if (PossibleValues.Contains(i))
                 {
                     PossibleValues.Remove(i);
-                    evaluate();
+                    Evaluate();
                 }
             }
 
-            void evaluate()
+            void Evaluate()
             {
                 if (PossibleValues.Count == 1)
                 {
                     Value = PossibleValues.ElementAt(0);
-                    Cage.removeOption(Value); //Tell the Cage to remove the Value from all other Cells
-                    Row.removeOption(Value); //Tell the Row to remove the Value from all other Cells
-                    Column.removeOption(Value); //Tell the Column to remove the Value from all other Cells
-                    Nonet.removeOption(Value); //Tell the Nonet to remove the Value from all other Cells
+                    Cage.RemoveOption(Value); //Tell the Cage to remove the Value from all other Cells
+                    Row.RemoveOption(Value); //Tell the Row to remove the Value from all other Cells
+                    Column.RemoveOption(Value); //Tell the Column to remove the Value from all other Cells
+                    Nonet.RemoveOption(Value); //Tell the Nonet to remove the Value from all other Cells
                 }
             }
 

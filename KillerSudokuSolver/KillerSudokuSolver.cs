@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -10,13 +11,13 @@ namespace KillerSudokuSolver
 		{
 			Console.WriteLine("*Killer Sudoku solver*");
 
-			KillerSudoku puzzle = parser("2.txt");
+			KillerSudoku puzzle = Parser("2.txt");
 			Console.WriteLine("Puzzle loaded");
 
 			puzzle.Verify();
 			Console.WriteLine("Puzzle verified");
 
-			puzzle.solve();
+			puzzle.Solve();
 		    Console.WriteLine("Puzzle solved");
 
 			Console.WriteLine(puzzle);
@@ -24,96 +25,23 @@ namespace KillerSudokuSolver
             Console.Read();
 		}
 
-        //Parses all the required info to build a Killer Sudoku and hands it to the constructor
-         static KillerSudoku parser(string file) {
-			KillerSudoku output = null;
-
-			try
-			{
-				using (StreamReader sr = new StreamReader(file))
-				{
-					string line = sr.ReadLine();
-					string[] splitLine = line.Split(' ');
-
-					int dimension = Int32.Parse(splitLine[0]);
-					int maxValue = dimension * dimension;
-					Cell[,] grid = new Cell[maxValue, maxValue];
-
-					int cagesAmount = Int32.Parse(splitLine[1]);
-					Cage[] cages = new Cage[cagesAmount];
-
-					bool killerX = Boolean.Parse(splitLine[2]);
-
-					int totalCellCounter = 0;
-
-					int counter;
-					int cellsInLine;
-					Cell tempCell;
-					Cell[] cageCells;
-
-					//Make all the Cells and Cages
-					for (int i = 0; i < cagesAmount; i++)
-					{
-						splitLine = sr.ReadLine().Split(' ');
-						cellsInLine = splitLine.Length - 2;
-						totalCellCounter += cellsInLine;
-						cageCells = new Cell[cellsInLine / 2];
-
-						counter = 0;
-
-						//Handles the Cell info on the line
-						while (counter * 2 < cellsInLine)
-						{
-							tempCell = new Cell(maxValue);
-							cageCells[counter] = tempCell;
-
-							grid[int.Parse(splitLine[counter * 2]) - 1, int.Parse(splitLine[counter * 2 + 1]) - 1] = tempCell;
-							counter++;
-						}
-
-						//Handles the Cage parameters on the line
-						cages[i] = new Cage(i, cageCells, int.Parse(splitLine[counter * 2]), splitLine[counter * 2 + 1][0], maxValue);
-
-                        foreach(Cell cell in cageCells)
-                        {
-                            cell.Cage = cages[i];
-                        }
-					}
-
-					totalCellCounter /= 2;
-
-					if (totalCellCounter != dimension * dimension * dimension * dimension)
-					{
-						Console.WriteLine("The amount of cells in the parsed file doesn't match the required amount." + totalCellCounter);
-					}
-
-					//Build the Killer Sudoku based on the parsed input
-					output = new KillerSudoku(grid, dimension, maxValue, cages, killerX);
-				}
-			} catch(Exception e) {
-				Console.WriteLine("There was a problem in the attempt to parse the KillerSudoku file:" + Environment.NewLine + e.Message);
-			}
-
-			return output;
-		}
-
 		class KillerSudoku {
-			bool killerX; //Whether this is a KillerX Sudoku
-			int maxValue; //Maximum value of any cell
-            int houseSum; //Sum of the numbers in all the Houses but the Cages
+			readonly bool killerX; //Whether this is a KillerX Sudoku
+			readonly int maxValue; //Maximum value of any cell
+            readonly int houseSum; //Sum of the numbers in all the Houses but the Cages
 
-			public Cell[,] grid;
-			Row[] rows;
-			Column[] columns;
-			Diagonal[] diagonals;
-			Nonet[,] nonets;
-			House[] houses;
+            readonly public Cell[,] grid;
+			readonly Row[] rows;
+            readonly Column[] columns;
+            readonly Diagonal[] diagonals;
+            readonly Nonet[,] nonets;
+            readonly House[] houses;
+            readonly Cage[] cages;
 
-			int dimension;
-			Cage[] cages;
+            readonly int dimension;
 
 			//The constructor not only builds the KillerSudoko itself, but initializes and interconnects all its components
-			public KillerSudoku(Cell[,] g, int n, int nn, Cage[] c, bool b)
+			public KillerSudoku(Cell[,] g, int n, int nn, Cage[] c, bool b, int extremeSum)
 			{
 				dimension = n;
 				maxValue = nn;
@@ -138,7 +66,6 @@ namespace KillerSudokuSolver
 				houses = new House[housesAmount];
 
 				int counter = 0;
-				int tempSum = maxValue + 1;
 				Cell[] tempRow;
 				Cell[] tempColumn;
 
@@ -168,7 +95,7 @@ namespace KillerSudokuSolver
 							}
 
 							//If this coordinate is in the top left to bottom right Diagonal
-							if (x + y == tempSum)
+							if (x + y == extremeSum)
 							{
 								tempDiagonal2[x] = grid[x, y];
 							}
@@ -302,14 +229,32 @@ namespace KillerSudokuSolver
                 }
             }
 
-			public void solve() {
+			public void Solve() {
+                List<SolveStep> priorityQueue = new List<SolveStep>();
+
                 foreach (Cage cage in cages)
                 {
-                    removeHighLow(cage);
+                    priorityQueue.Add(new SolveStep(cage,0));
+                }
+
+                foreach(SolveStep step in priorityQueue)
+                {
+                    List<Cell> improvedCells = step.Execute();
+
+                    if (improvedCells.Count != 0)
+                    {
+                        foreach (Cell cell in improvedCells)
+                        {
+                            foreach (House house in cell.Houses)
+                            {
+                                priorityQueue.Add(new SolveStep(house, 0));
+                            }
+                        }
+                    }
                 }
 			}
 
-            public void removeHighLow(Cage cage)
+            public void RemoveHighLow(Cage cage)
             {
                 int max; //The largest possible value for this Cage
                 int min; //The smallest possible value for this Cage
@@ -324,7 +269,7 @@ namespace KillerSudokuSolver
                     {
                         for (int i = max + 1; i <= maxValue; i++)
                         {
-                            cell.removeOption(i);
+                            cell.RemoveOption(i);
                         }
                     }
 
@@ -333,7 +278,7 @@ namespace KillerSudokuSolver
                     {
                         for (int i = min - 1; i > 0; i--)
                         {
-                            cell.removeOption(i);
+                            cell.RemoveOption(i);
                         }
                     }
                 }
