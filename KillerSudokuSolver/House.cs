@@ -6,14 +6,13 @@ namespace KillerSudokuSolver
     {
         abstract class House
         {
-            public int Id { get; set; }
-            public int Goal { get; set; }
-            public HashSet<int> possibleValues;
-
             public Cell[] Cells { get; set; }
+            public int Id { get; set; }
+            public SortedSet<int> PossibleValues { get; set; }
+			public int Goal { get; set; }
 
-            //Removes this option from all Cells in the House
-            public void RemoveOption(int i)
+			//Removes this option from all Cells in the House
+			public void RemoveOption(int i)
             {
                 foreach (Cell cell in Cells)
                 {

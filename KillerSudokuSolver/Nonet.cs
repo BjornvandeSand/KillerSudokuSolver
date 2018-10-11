@@ -7,16 +7,15 @@ namespace KillerSudokuSolver
 		class Nonet : House
         {
 
-            public Nonet(Cell[] c, int n, int maxValue)
+            public Nonet(Cell[] c, int maxValue)
             {
-                Goal = n;
                 Cells = c;
 
-                possibleValues = new HashSet<int>();
+                PossibleValues = new SortedSet<int>();
 
                 for (int i = 1; i <= maxValue; i++)
                 {
-                    possibleValues.Add(i);
+                    PossibleValues.Add(i);
                 }
             }
         }

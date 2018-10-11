@@ -74,7 +74,7 @@ namespace KillerSudokuSolver
                         }
 
                         //Handles the Cage parameters on the line
-                        cages[i] = new Cage(i, cageCells, int.Parse(splitLine[counter * 2]), splitLine[counter * 2 + 1][0], extremeSum);
+                        cages[i] = new Cage(i, cageCells, int.Parse(splitLine[counter * 2]), splitLine[counter * 2 + 1][0]);
 
                         foreach (Cell cell in cageCells)
                         {

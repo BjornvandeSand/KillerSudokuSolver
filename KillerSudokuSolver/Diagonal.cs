@@ -6,17 +6,16 @@ namespace KillerSudokuSolver
     {
         class Diagonal : House
         {
-            public Diagonal(int x, Cell[] c, int n, int maxValue)
+            public Diagonal(int x, Cell[] c, int maxValue)
             {
                 Id = x;
-                Goal = n;
                 Cells = c;
 
-                possibleValues = new HashSet<int>();
+                PossibleValues = new SortedSet<int>();
 
                 for (int i = 1; i <= maxValue; i++)
                 {
-                    possibleValues.Add(i);
+                    PossibleValues.Add(i);
                 }
             }
         }

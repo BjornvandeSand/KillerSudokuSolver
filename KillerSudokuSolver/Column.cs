@@ -6,17 +6,16 @@ namespace KillerSudokuSolver
     {
         class Column : House
         {
-            public Column(int x, Cell[] c, int n, int maxValue)
+            public Column(int x, Cell[] c, int maxValue)
             {
                 Id = x;
                 Cells = c;
-                Goal = n;
 
-                possibleValues = new HashSet<int>();
+                PossibleValues = new SortedSet<int>();
 
                 for (int i = 1; i <= maxValue; i++)
                 {
-                    possibleValues.Add(i);
+                    PossibleValues.Add(i);
                 }
             }
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace KillerSudokuSolver
@@ -11,7 +10,7 @@ namespace KillerSudokuSolver
 		{
 			Console.WriteLine("*Killer Sudoku solver*");
 
-			KillerSudoku puzzle = Parser("2.txt");
+			KillerSudoku puzzle = Parser("1.txt");
 			Console.WriteLine("Puzzle loaded");
 
 			puzzle.Verify();
@@ -28,7 +27,6 @@ namespace KillerSudokuSolver
 		class KillerSudoku {
 			readonly bool killerX; //Whether this is a KillerX Sudoku
 			readonly int maxValue; //Maximum value of any cell
-            readonly int houseSum; //Sum of the numbers in all the Houses but the Cages
 
             readonly public Cell[,] grid;
 			readonly Row[] rows;
@@ -45,7 +43,6 @@ namespace KillerSudokuSolver
 			{
 				dimension = n;
 				maxValue = nn;
-                houseSum = maxValue * (maxValue + 1) / 2;
 				grid = g;
 				rows = new Row[maxValue];
 				columns = new Column[maxValue];
@@ -102,7 +99,7 @@ namespace KillerSudokuSolver
 						}
 					}
                     
-					rows[y] = new Row(y, tempRow, houseSum, maxValue);
+					rows[y] = new Row(y, tempRow, maxValue);
 
                     foreach(Cell cell in tempRow)
                     {
@@ -123,7 +120,7 @@ namespace KillerSudokuSolver
 						tempColumn[y] = grid[x, y];
 					}
 
-					columns[x] = new Column(x, tempColumn, houseSum, maxValue);
+					columns[x] = new Column(x, tempColumn, maxValue);
 
                     foreach (Cell cell in tempColumn)
                     {
@@ -137,7 +134,7 @@ namespace KillerSudokuSolver
                 //Adds the Diagonals if this is a KillerX Sudoku
 				if (killerX)
 				{
-					Diagonal tempDiagonal = new Diagonal(0, tempDiagonal1, houseSum, maxValue);
+					Diagonal tempDiagonal = new Diagonal(0, tempDiagonal1, maxValue);
 
                     foreach (Cell cell in tempDiagonal.Cells)
                     {
@@ -148,7 +145,7 @@ namespace KillerSudokuSolver
 					houses[counter] = tempDiagonal;
 					counter++;
 
-					tempDiagonal = new Diagonal(1, tempDiagonal2, houseSum, maxValue);
+					tempDiagonal = new Diagonal(1, tempDiagonal2, maxValue);
 
                     foreach (Cell cell in tempDiagonal.Cells)
                     {
@@ -178,7 +175,7 @@ namespace KillerSudokuSolver
 							}
 						}
 
-                        tempNonet = new Nonet(tempCells, houseSum, maxValue);
+                        tempNonet = new Nonet(tempCells, maxValue);
                         nonets[xFactor / dimension, yFactor / dimension] = tempNonet;
                         cellCounter = 0;
 
@@ -214,7 +211,7 @@ namespace KillerSudokuSolver
 				}
 
                 //and checks if they equal what the sum of all PossibleValues should be
-				if (sum != maxValue * houseSum)
+                if (sum != maxValue * maxValue * (maxValue + 1) / 2)
 				{
 					Console.WriteLine("Sum of Cages doesn't add up to required sum of Grid");
 				}
@@ -231,79 +228,28 @@ namespace KillerSudokuSolver
 
             //Solves this puzzle through a Priority Queue and several possible steps
 			public void Solve() {
-                List<SolveStep> priorityQueue = new List<SolveStep>();
+                List<Rule> priorityQueue = new List<Rule>();
 
                 foreach (Cage cage in cages)
                 {
-                    priorityQueue.Add(new SolveStep(cage,0));
+                    priorityQueue.Add(new RemoveHighLow(cage,0));
                 }
 
-                foreach(SolveStep step in priorityQueue)
+                foreach(Rule step in priorityQueue)
                 {
                     List<Cell> improvedCells = step.Execute();
-
-                    if (improvedCells.Count != 0)
-                    {
-                        foreach (Cell cell in improvedCells)
-                        {
-                            foreach (House house in cell.Houses)
-                            {
-                                priorityQueue.Add(new SolveStep(house, 0));
-                            }
-                        }
-                    }
                 }
+
+				/*foreach (Cage cage in cages)
+				{
+					foreach (int i in cage.Cells[0].PossibleValues)
+					{
+						Console.Write(i + "  ");
+					}
+
+					Console.WriteLine();
+				}*/
 			}
-
-            //Removes Values that are too high or low to be possible with the Cage's sum and returns affeced Cells
-            public List<Cell> RemoveHighLow(Cage cage)
-            {
-                List<Cell> output = new List<Cell>(cage.Cells.Length);
-
-                int max = cage.Goal - cage.Cells.Length * (cage.Cells.Length - 1) / 2; //Determine the maximum Value allowed in this Cage
-                int min = cage.Goal - ((cage.Cells.Length - 1) * (maxValue - (cage.Cells.Length - 1) + 1 + maxValue) / 2); //Determine the minimum Value allowed in this Cage
-
-                foreach (Cell cell in cage.Cells)
-                {
-                    //This part removes possible Values that are are too high
-                    if (max < maxValue) //Determines if there's any possible Values low enough to cull
-                    {
-                        for (int i = max + 1; i <= maxValue; i++)
-                        {
-                            //Check if this Value is still listed as possible for the Cell
-                            if (cell.PossibleValues.Contains(i))
-                            {
-                                cell.PossibleValues.Remove(i); //Remove it
-
-                                if (!output.Contains(cell)) //Check if this Cell isn't listed as one that should be evaluated
-                                {
-                                    output.Add(cell); //Add it to the list of upcoming evaluations
-                                }
-                            }
-                        }
-                    }
-
-                    //This part removes possible Values that are too low
-                    if (min > 0) //Determines if there's any possible Values high enough to cull
-                    {
-                        for (int i = min - 1; i > 0; i--)
-                        {
-                            //Check if this Value is still listed as possible for the Cell
-                            if (cell.PossibleValues.Contains(i))
-                            {
-                                cell.PossibleValues.Remove(i); //Remove it
-
-                                if (!output.Contains(cell)) //Check if this Cell isn't listed as one that should be evaluated
-                                {
-                                    output.Add(cell); //Add it to the list of upcoming evaluations
-                                }
-                            }
-                        }
-                    }
-                }
-
-                return output; //Return the list of upcoming Cells to evaluate
-            }
 
             //Creates a String representation of the puzzle for easy printing
 			public override string ToString()

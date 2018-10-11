@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace KillerSudokuSolver
@@ -8,11 +7,11 @@ namespace KillerSudokuSolver
     {
         class Cell
         {
+            public SortedSet<int> PossibleValues { get; set; }
+
             public int Value { get; set; } //The final Value for this Cell
 
             public Cage Cage { get; set; }
-
-            public HashSet<int> PossibleValues { get; set; } //The Values that are still possible for this Cell
 
             public Nonet Nonet { get; set; }
 
@@ -27,7 +26,7 @@ namespace KillerSudokuSolver
             public Cell(int maxValue, int housesAmount)
             {
                 Value = 0;
-                PossibleValues = new HashSet<int>();
+                PossibleValues = new SortedSet<int>();
                 Houses = new House[housesAmount];
 
                 for (int i = 1; i <= maxValue; i++)

@@ -8,18 +8,18 @@ namespace KillerSudokuSolver
         {
             readonly char type;
 
-            public Cage(int id, Cell[] c, int n, char type, int maxValue)
+            public Cage(int id, Cell[] cells, int goal, char type)
             {
                 Id = id;
-                Cells = c;
-                Goal = n;
+                Cells = cells;
+                Goal = goal;
                 this.type = type;
 
-                possibleValues = new HashSet<int>();
+                PossibleValues = new SortedSet<int>();
 
-                for (int i = 1; i <= maxValue; i++)
+                foreach (int value in Cells[0].PossibleValues)
                 {
-                    possibleValues.Add(i);
+                    PossibleValues.Add(value);
                 }
             }
         }
