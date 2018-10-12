@@ -10,7 +10,7 @@ namespace KillerSudokuSolver
 		{
 			Console.WriteLine("*Killer Sudoku solver*");
 
-			KillerSudoku puzzle = Parser("1.txt");
+			KillerSudoku puzzle = Parser("warmup01.txt");
 			Console.WriteLine("Puzzle loaded");
 
 			puzzle.Verify();
@@ -26,17 +26,16 @@ namespace KillerSudokuSolver
 
 		class KillerSudoku {
 			readonly bool killerX; //Whether this is a KillerX Sudoku
+			readonly int dimension;
 			readonly int maxValue; //Maximum value of any cell
 
             readonly public Cell[,] grid;
 			readonly Row[] rows;
             readonly Column[] columns;
             readonly Diagonal[] diagonals;
-            readonly Nonet[,] nonets;
+            readonly Block[,] blocks;
             readonly House[] houses;
             readonly Cage[] cages;
-
-            readonly int dimension;
 
 			//The constructor not only builds the KillerSudoko itself, but initializes and interconnects all its components
 			public KillerSudoku(Cell[,] g, int n, int nn, Cage[] c, bool b, int extremeSum)
@@ -47,11 +46,11 @@ namespace KillerSudokuSolver
 				rows = new Row[maxValue];
 				columns = new Column[maxValue];
 				diagonals = new Diagonal[2];
-				nonets = new Nonet[n, n];
+				blocks = new Block[n, n];
 				cages = c;
 				killerX = b;
 
-				//All rows, columns and nonets
+				//All rows, columns and Blocks
 				int housesAmount = maxValue * 3 + cages.Length;
 
 				//KillerX Sudokus include the two diagonals
@@ -138,7 +137,7 @@ namespace KillerSudokuSolver
 
                     foreach (Cell cell in tempDiagonal.Cells)
                     {
-                        cell.Diagional = tempDiagonal;
+                        cell.Diagonal = tempDiagonal;
                     }
 
                     diagonals[0] = tempDiagonal;
@@ -149,7 +148,7 @@ namespace KillerSudokuSolver
 
                     foreach (Cell cell in tempDiagonal.Cells)
                     {
-                        cell.Diagional = tempDiagonal;
+                        cell.Diagonal = tempDiagonal;
                     }
 
                     diagonals[1] = tempDiagonal;
@@ -158,10 +157,10 @@ namespace KillerSudokuSolver
 				}
 
 				Cell[] tempCells = new Cell[maxValue];
-                Nonet tempNonet;
+                Block tempBlock;
                 int cellCounter = 0;
 
-                //Walk through all Cells in the Grid Nonet by Nonet and create these Nonet objects
+                //Walk through all Cells in the Grid Block by Block and create these Block objects
 				for (int xFactor = 0; xFactor < maxValue; xFactor += dimension)
 				{
 					for (int yFactor = 0; yFactor < maxValue; yFactor += dimension)
@@ -175,16 +174,16 @@ namespace KillerSudokuSolver
 							}
 						}
 
-                        tempNonet = new Nonet(tempCells, maxValue);
-                        nonets[xFactor / dimension, yFactor / dimension] = tempNonet;
+                        tempBlock = new Block(tempCells, maxValue);
+                        blocks[xFactor / dimension, yFactor / dimension] = tempBlock;
                         cellCounter = 0;
 
                         foreach(Cell cell in tempCells)
                         {
-                            cell.Nonet = tempNonet;
+                            cell.Block = tempBlock;
                         }
 
-                        houses[counter] = tempNonet;
+                        houses[counter] = tempBlock;
                         counter++;
                     }
 				}
@@ -228,17 +227,22 @@ namespace KillerSudokuSolver
 
             //Solves this puzzle through a Priority Queue and several possible steps
 			public void Solve() {
-                List<Rule> priorityQueue = new List<Rule>();
+                Queue<Rule> priorityQueue = new Queue<Rule>();
 
                 foreach (Cage cage in cages)
                 {
-                    priorityQueue.Add(new RemoveHighLow(cage,0));
+                    priorityQueue.Enqueue(new RemoveHighLow(cage,0));
                 }
 
-                foreach(Rule step in priorityQueue)
+                while(priorityQueue.Count != 0)
                 {
-                    List<Cell> improvedCells = step.Execute();
-                }
+                    List<Cell> improvedCells = priorityQueue.Dequeue().Execute();
+
+					foreach (Cell cell in improvedCells)
+					{
+						priorityQueue.Enqueue(new RemoveDuplicatePossibilities(cell, 0));
+					}
+				}
 
 				/*foreach (Cage cage in cages)
 				{

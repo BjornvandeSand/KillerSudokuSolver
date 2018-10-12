@@ -4,10 +4,10 @@ namespace KillerSudokuSolver
 {
     partial class KillerSudokuSolver
     {
-		class Nonet : House
+		class Block : House
         {
 
-            public Nonet(Cell[] c, int maxValue)
+            public Block(Cell[] c, int maxValue)
             {
                 Cells = c;
 

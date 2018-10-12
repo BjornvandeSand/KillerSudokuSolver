@@ -5,21 +5,19 @@ namespace KillerSudokuSolver
 {
     partial class KillerSudokuSolver
     {
-        class Cell
+        class Cell : House
         {
-            public SortedSet<int> PossibleValues { get; set; }
-
             public int Value { get; set; } //The final Value for this Cell
 
             public Cage Cage { get; set; }
 
-            public Nonet Nonet { get; set; }
+            public Block Block { get; set; }
 
             public Column Column { get; set; }
 
             public Row Row { get; set; }
 
-            public Diagonal Diagional { get; set; }
+            public Diagonal Diagonal { get; set; }
 
             public House[] Houses { get; set; }
 
@@ -35,22 +33,31 @@ namespace KillerSudokuSolver
                 }
             }
 
-            void Evaluate()
+            void EvaluatePossibleValues()
             {
                 if (PossibleValues.Count == 1)
                 {
                     Value = PossibleValues.ElementAt(0); //Set the final Value
-
-                    //Remove this possible Value from all other Houses associated with this Cell
-                    foreach (House house in Houses)
-                    {
-                        house.RemoveOption(Value);
-                    }
                 }
             }
 
-            //Provides a String representation of this Cell for easy printing
-            public override string ToString()
+			public bool RemovePossibleValueIfPresent(int i)
+			{
+				bool change = false;
+
+				if (PossibleValues.Contains(i))
+				{
+					change = true;
+					PossibleValues.Remove(i);
+				}
+
+				EvaluatePossibleValues();
+
+				return change;
+			}
+
+			//Provides a String representation of this Cell for easy printing
+			public override string ToString()
             {
                 return Value.ToString();
             }

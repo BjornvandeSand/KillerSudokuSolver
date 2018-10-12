@@ -7,18 +7,23 @@ namespace KillerSudokuSolver
         abstract class House
         {
             public Cell[] Cells { get; set; }
-            public int Id { get; set; }
+            public int Id { get;  set; }
             public SortedSet<int> PossibleValues { get; set; }
-			public int Goal { get; set; }
 
-			//Removes this option from all Cells in the House
-			public void RemoveOption(int i)
-            {
-                foreach (Cell cell in Cells)
-                {
-                    cell.PossibleValues.Remove(i);
-                }
-            }
-        }
+			public List<Cell> RemovePossibleValue(int i)
+			{
+				List<Cell> output = new List<Cell>(Cells.Length);
+				foreach(Cell cell in Cells)
+				{
+					if(cell.RemovePossibleValueIfPresent(i))
+					{
+						output.Add(cell);
+					}
+					
+				}
+
+				return output;
+			}
+		}
     }
 }
