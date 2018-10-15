@@ -12,7 +12,7 @@ namespace KillerSudokuSolver
 
 			public List<Cell> RemovePossibleValue(int i)
 			{
-				List<Cell> output = new List<Cell>(Cells.Length);
+				List<Cell> output = new List<Cell>();
 				foreach(Cell cell in Cells)
 				{
 					if(cell.RemovePossibleValueIfPresent(i))

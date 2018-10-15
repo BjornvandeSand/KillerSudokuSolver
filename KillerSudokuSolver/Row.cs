@@ -8,10 +8,10 @@ namespace KillerSudokuSolver
     {
         class Row : House
         {
-            public Row(int y, Cell[] c, int maxValue)
+            public Row(int y, Cell[] cells, int maxValue)
             {
                 Id = y;
-                Cells = c;
+                Cells = cells;
 
                 PossibleValues = new SortedSet<int>();
 

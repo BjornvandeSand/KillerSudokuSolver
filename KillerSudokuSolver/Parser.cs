@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace KillerSudokuSolver
@@ -10,7 +11,7 @@ namespace KillerSudokuSolver
         {
             KillerSudoku output = null;
 
-            try
+			try
             {
                 using (StreamReader sr = new StreamReader(file))
                 {
@@ -37,8 +38,10 @@ namespace KillerSudokuSolver
 
                     bool killerX = Boolean.Parse(splitLine[2]);
 
-                    //Make all the Cells and Cages
-                    for (int i = 0; i < cagesAmount; i++)
+					SortedSet<int> PossibleValues;
+
+					//Make all the Cells and Cages
+					for (int i = 0; i < cagesAmount; i++)
                     {
                         splitLine = sr.ReadLine().Split(' ');
                         cellsInLine = splitLine.Length - 2;
@@ -73,8 +76,15 @@ namespace KillerSudokuSolver
                             counter++;
                         }
 
-                        //Handles the Cage parameters on the line
-                        cages[i] = new Cage(i, cageCells, int.Parse(splitLine[counter * 2]), splitLine[counter * 2 + 1][0]);
+						PossibleValues = new SortedSet<int>();
+
+						for (int n = 1; n <= maxValue; n++)
+						{
+							PossibleValues.Add(n);
+						}
+
+						//Handles the Cage parameters on the line
+						cages[i] = new Cage(i, cageCells, int.Parse(splitLine[counter * 2]), splitLine[counter * 2 + 1][0],PossibleValues);
 
                         foreach (Cell cell in cageCells)
                         {

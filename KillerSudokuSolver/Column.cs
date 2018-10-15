@@ -6,10 +6,10 @@ namespace KillerSudokuSolver
     {
         class Column : House
         {
-            public Column(int x, Cell[] c, int maxValue)
+            public Column(int x, Cell[] cells, int maxValue)
             {
                 Id = x;
-                Cells = c;
+                Cells = cells;
 
                 PossibleValues = new SortedSet<int>();
 

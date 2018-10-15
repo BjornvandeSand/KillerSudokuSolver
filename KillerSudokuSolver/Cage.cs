@@ -9,20 +9,21 @@ namespace KillerSudokuSolver
             readonly char type;
 			public int Goal { get; }
 
-			public Cage(int id, Cell[] cells, int goal, char type)
-            {
-                Id = id;
-                Cells = cells;
-                Goal = goal;
-                this.type = type;
+			public Cage(int id, Cell[] cells, int goal, char type, SortedSet<int> possibleValues)
+			{
+				Id = id;
+				Cells = cells;
+				Goal = goal;
+				this.type = type;
+				PossibleValues = possibleValues;
 
-                PossibleValues = new SortedSet<int>();
+				PossibleValues = new SortedSet<int>();
 
-                foreach (int value in Cells[0].PossibleValues)
-                {
-                    PossibleValues.Add(value);
-                }
-            }
+				foreach (int value in Cells[0].PossibleValues)
+				{
+					PossibleValues.Add(value);
+				}
+			}
 
 			public Cage GenerateSuccessor()
 			{
@@ -42,7 +43,7 @@ namespace KillerSudokuSolver
 					}
 				}
 
-				return new Cage(-1,incompleteCells.ToArray(),updatedGoal,type);
+				return new Cage(Id,incompleteCells.ToArray(),updatedGoal,type,PossibleValues);
 			}
         }
     }

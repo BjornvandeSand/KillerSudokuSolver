@@ -21,7 +21,15 @@ namespace KillerSudokuSolver
 
 			Console.WriteLine(puzzle);
 
-            Console.Read();
+			//TESTLINES
+			foreach (int i in puzzle.grid[0, 0].PossibleValues)
+			{
+				Console.Write(i + " ");
+			}
+			Console.WriteLine();
+			//END TESTLINES
+
+			Console.Read();
 		}
 
 		class KillerSudoku {
@@ -38,17 +46,17 @@ namespace KillerSudokuSolver
             readonly Cage[] cages;
 
 			//The constructor not only builds the KillerSudoko itself, but initializes and interconnects all its components
-			public KillerSudoku(Cell[,] g, int n, int nn, Cage[] c, bool b, int extremeSum)
+			public KillerSudoku(Cell[,] grid, int dimension, int maxValue, Cage[] cages, bool killerX, int extremeSum)
 			{
-				dimension = n;
-				maxValue = nn;
-				grid = g;
+				this.dimension = dimension;
+				this.maxValue = maxValue;
+				this.grid = grid;
 				rows = new Row[maxValue];
 				columns = new Column[maxValue];
 				diagonals = new Diagonal[2];
-				blocks = new Block[n, n];
-				cages = c;
-				killerX = b;
+				blocks = new Block[dimension, dimension];
+				this.cages = cages;
+				this.killerX = killerX;
 
 				//All rows, columns and Blocks
 				int housesAmount = maxValue * 3 + cages.Length;
@@ -187,6 +195,20 @@ namespace KillerSudokuSolver
                         counter++;
                     }
 				}
+
+				//Collect all of each Cell's Houses in their House list
+				foreach(Cell cell in grid)
+				{
+					cell.Houses.Add(cell.Row);
+					cell.Houses.Add(cell.Column);
+					cell.Houses.Add(cell.Cage);
+					cell.Houses.Add(cell.Block);
+
+					if(cell.Diagonal != null)
+					{
+						cell.Houses.Add(cell.Diagonal);
+					}
+				}
 			}
 
             //Does a number of basic checks to see if there are likely errors in the parsed puzzle
@@ -197,7 +219,7 @@ namespace KillerSudokuSolver
 				{
 					if (cell == null)
 					{
-						Console.WriteLine("Unitialized cell in parsed puzzle");
+						Console.WriteLine("Unitialized Cell in parsed puzzle");
 					}
 				}
 
@@ -241,18 +263,14 @@ namespace KillerSudokuSolver
 					foreach (Cell cell in improvedCells)
 					{
 						priorityQueue.Enqueue(new RemoveDuplicatePossibilities(cell, 0));
+
+						foreach (House house in cell.Houses)
+						{
+							Console.WriteLine(house.GetType());
+							priorityQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
+						}
 					}
 				}
-
-				/*foreach (Cage cage in cages)
-				{
-					foreach (int i in cage.Cells[0].PossibleValues)
-					{
-						Console.Write(i + "  ");
-					}
-
-					Console.WriteLine();
-				}*/
 			}
 
             //Creates a String representation of the puzzle for easy printing

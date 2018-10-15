@@ -19,13 +19,13 @@ namespace KillerSudokuSolver
 
             public Diagonal Diagonal { get; set; }
 
-            public House[] Houses { get; set; }
+            public List<House> Houses { get; set; }
 
             public Cell(int maxValue, int housesAmount)
             {
                 Value = 0;
                 PossibleValues = new SortedSet<int>();
-                Houses = new House[housesAmount];
+                Houses = new List<House>(housesAmount);
 
                 for (int i = 1; i <= maxValue; i++)
                 {

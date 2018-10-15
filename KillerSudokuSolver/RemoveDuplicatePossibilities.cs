@@ -9,8 +9,8 @@ namespace KillerSudokuSolver
             //Removes PossibleValues that are no longer possible, because they're already the final Value for this Cell
             public RemoveDuplicatePossibilities(House target, float priority)
             {
-                this.Target = target;
-                this.Priority = priority;
+                Target = target;
+                Priority = priority;
             }
 
             public override List<Cell> Execute() {
@@ -22,8 +22,6 @@ namespace KillerSudokuSolver
 				{
 					foreach(House house in Target.Houses)
 					{
-						System.Console.WriteLine(Target.Houses[1]);
-						System.Console.WriteLine(Target.Row.Id + ","  + Target.Column.Id);
 						output.AddRange(house.RemovePossibleValue(Target.Value));
 					}
 				}

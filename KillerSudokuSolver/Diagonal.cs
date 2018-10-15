@@ -6,10 +6,10 @@ namespace KillerSudokuSolver
     {
         class Diagonal : House
         {
-            public Diagonal(int x, Cell[] c, int maxValue)
+            public Diagonal(int id, Cell[] cells, int maxValue)
             {
-                Id = x;
-                Cells = c;
+                Id = id;
+                Cells = cells;
 
                 PossibleValues = new SortedSet<int>();
 
