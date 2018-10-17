@@ -3,64 +3,61 @@ using System.Linq;
 
 namespace KillerSudokuSolver
 {
-    partial class KillerSudokuSolver
+    class Cell : House
     {
-        class Cell : House
+        public int Value { get; set; } //The final Value for this Cell
+
+        public Cage Cage { get; set; }
+
+        public Block Block { get; set; }
+
+        public Column Column { get; set; }
+
+        public Row Row { get; set; }
+
+        public Diagonal Diagonal { get; set; }
+
+        public List<House> Houses { get; set; }
+
+        public Cell(int maxValue, int housesAmount)
         {
-            public int Value { get; set; } //The final Value for this Cell
+            Value = 0;
+            PossibleValues = new SortedSet<int>();
+            Houses = new List<House>(housesAmount);
 
-            public Cage Cage { get; set; }
-
-            public Block Block { get; set; }
-
-            public Column Column { get; set; }
-
-            public Row Row { get; set; }
-
-            public Diagonal Diagonal { get; set; }
-
-            public List<House> Houses { get; set; }
-
-            public Cell(int maxValue, int housesAmount)
+            for (int i = 1; i <= maxValue; i++)
             {
-                Value = 0;
-                PossibleValues = new SortedSet<int>();
-                Houses = new List<House>(housesAmount);
-
-                for (int i = 1; i <= maxValue; i++)
-                {
-                    PossibleValues.Add(i);
-                }
+                PossibleValues.Add(i);
             }
+        }
 
-            void EvaluatePossibleValues()
+        void EvaluatePossibleValues()
+        {
+            if (PossibleValues.Count == 1)
             {
-                if (PossibleValues.Count == 1)
-                {
-                    Value = PossibleValues.ElementAt(0); //Set the final Value
-                }
+                Value = PossibleValues.ElementAt(0); //Set the final Value
             }
+        }
 
-			public bool RemovePossibleValueIfPresent(int i)
+		public bool RemovePossibleValueIfPresent(int i)
+		{
+			bool change = false;
+
+			if (PossibleValues.Contains(i))
 			{
-				bool change = false;
-
-				if (PossibleValues.Contains(i))
-				{
-					change = true;
-					PossibleValues.Remove(i);
-				}
-
-				EvaluatePossibleValues();
-
-				return change;
+				change = true;
+				PossibleValues.Remove(i);
 			}
 
-			//Provides a String representation of this Cell for easy printing
-			public override string ToString()
-            {
-                return Value.ToString();
-            }
+			EvaluatePossibleValues();
+
+			return change;
+		}
+
+		//Provides a String representation of this Cell for easy printing
+		public override string ToString()
+        {
+            return Value.ToString();
         }
     }
 }

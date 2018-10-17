@@ -4,40 +4,45 @@ using System.Linq;
 
 namespace KillerSudokuSolver
 {
-    partial class KillerSudokuSolver
+    class Row : House
     {
-        class Row : House
+		readonly int dimension;
+
+        public Row(int y, Cell[] cells, int maxValue, int dimension)
         {
-            public Row(int y, Cell[] cells, int maxValue)
+            Id = y;
+            Cells = cells;
+			this.dimension = dimension;
+
+            PossibleValues = new SortedSet<int>();
+
+            for (int i = 1; i <= maxValue; i++)
             {
-                Id = y;
-                Cells = cells;
-
-                PossibleValues = new SortedSet<int>();
-
-                for (int i = 1; i <= maxValue; i++)
-                {
-                    PossibleValues.Add(i);
-                }
+                PossibleValues.Add(i);
             }
+        }
 
-            public override string ToString()
-            {
-                string output = Id + 1 + String.Concat(Enumerable.Repeat(" ", Cells.Length.ToString().Length - Id.ToString().Length + 1)) + "| ";
-                int maxLength = Cells.Length.ToString().Length;
+		public override string ToString()
+		{
+			string output = Id + 1 + string.Concat(Enumerable.Repeat(" ", Cells.Length.ToString().Length - Id.ToString().Length + 1)) + "| ";
+			int maxLength = Cells.Length.ToString().Length;
 
-                string cellOutput;
+			string cellOutput;
 
-                foreach (Cell cell in Cells)
-                {
-                    cellOutput = cell.ToString();
-                    output += cellOutput + String.Concat(Enumerable.Repeat(" ", maxLength - cellOutput.Length + 1));
-                }
+			for (int i = 0; i < Cells.Length; i++)
+			{
+				cellOutput = Cells[i].ToString();
+				output += cellOutput + string.Concat(Enumerable.Repeat(" ", maxLength - cellOutput.Length + 1));
 
-                output += "| " + (Id + 1) + Environment.NewLine;
+				if ((i + 1) % dimension == 0)
+				{
+					output += "| ";
+				}
+			}
 
-                return output;
-            }
+            output += Id + 1 + Environment.NewLine;
+
+            return output;
         }
     }
 }

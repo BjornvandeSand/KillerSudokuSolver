@@ -61,7 +61,7 @@
   <ItemGroup>
     <Compile Include="Cage.cs" />
     <Compile Include="Cell.cs" />
-    <Compile Include="Parser.cs" />
+    <Compile Include="KillerSudoku.cs" />
     <Compile Include="Column.cs" />
     <Compile Include="Diagonal.cs" />
     <Compile Include="House.cs" />

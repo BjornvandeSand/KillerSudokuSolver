@@ -2,22 +2,18 @@ using System.Collections.Generic;
 
 namespace KillerSudokuSolver
 {
-    partial class KillerSudokuSolver
+	class Block : House
     {
-		class Block : House
+        public Block(Cell[] c, int maxValue)
         {
+            Cells = c;
 
-            public Block(Cell[] c, int maxValue)
+            PossibleValues = new SortedSet<int>();
+
+            for (int i = 1; i <= maxValue; i++)
             {
-                Cells = c;
-
-                PossibleValues = new SortedSet<int>();
-
-                for (int i = 1; i <= maxValue; i++)
-                {
-                    PossibleValues.Add(i);
-                }
+                PossibleValues.Add(i);
             }
         }
-	}
+    }
 }

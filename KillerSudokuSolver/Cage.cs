@@ -2,49 +2,46 @@
 
 namespace KillerSudokuSolver
 {
-    partial class KillerSudokuSolver
+    class Cage : House
     {
-        class Cage : House
-        {
-            readonly char type;
-			public int Goal { get; }
+        readonly char type;
+		public int Goal { get; }
 
-			public Cage(int id, Cell[] cells, int goal, char type, SortedSet<int> possibleValues)
+		public Cage(int id, Cell[] cells, int goal, char type, SortedSet<int> possibleValues)
+		{
+			Id = id;
+			Cells = cells;
+			Goal = goal;
+			this.type = type;
+			PossibleValues = possibleValues;
+
+			PossibleValues = new SortedSet<int>();
+
+			foreach (int value in Cells[0].PossibleValues)
 			{
-				Id = id;
-				Cells = cells;
-				Goal = goal;
-				this.type = type;
-				PossibleValues = possibleValues;
+				PossibleValues.Add(value);
+			}
+		}
 
-				PossibleValues = new SortedSet<int>();
+		public Cage GenerateSuccessor()
+		{
+			int updatedGoal = Goal;
+			List<Cell> incompleteCells = new List<Cell>(Cells.Length);
 
-				foreach (int value in Cells[0].PossibleValues)
+			foreach(Cell cell in Cells)
+			{
+				if(cell.Value != 0)
 				{
-					PossibleValues.Add(value);
+					updatedGoal -= cell.Value;
+				}
+
+				else
+				{
+					incompleteCells.Add(cell);
 				}
 			}
 
-			public Cage GenerateSuccessor()
-			{
-				int updatedGoal = Goal;
-				List<Cell> incompleteCells = new List<Cell>(Cells.Length);
-
-				foreach(Cell cell in Cells)
-				{
-					if(cell.Value != 0)
-					{
-						updatedGoal -= cell.Value;
-					}
-
-					else
-					{
-						incompleteCells.Add(cell);
-					}
-				}
-
-				return new Cage(Id,incompleteCells.ToArray(),updatedGoal,type,PossibleValues);
-			}
-        }
+			return new Cage(Id,incompleteCells.ToArray(),updatedGoal,type,PossibleValues);
+		}
     }
 }

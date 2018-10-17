@@ -1,30 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 
 namespace KillerSudokuSolver
 {
-	partial class KillerSudokuSolver
+	class KillerSudokuSolver
 	{
 		static void Main(string[] args)
-		{
-			Console.WriteLine("*Killer Sudoku solver*");
+		{ 
+			Console.WriteLine("*Killer Sudoku solver*" + Environment.NewLine);
 
-			KillerSudoku puzzle = Parser("warmup01.txt");
+			string path = "Puzzles/Warmup01.txt";
+			KillerSudoku puzzle = Parse(path);
 			Console.WriteLine("Puzzle loaded");
 
 			puzzle.Verify();
 			Console.WriteLine("Puzzle verified");
 
 			puzzle.Solve();
-		    Console.WriteLine("Puzzle solved");
 
-			Console.WriteLine(puzzle);
-
-			//TESTLINES
-			foreach (int i in puzzle.grid[0, 0].PossibleValues)
+			if (puzzle.Solved())
 			{
-				Console.Write(i + " ");
+				Console.WriteLine("Puzzle solved");
+			}
+			else
+			{
+				Console.WriteLine("Puzzle unsolved, but no more improving rules found");
+			}
+
+			Console.WriteLine(Environment.NewLine + "Name: " + Path.GetFileNameWithoutExtension(path) + Environment.NewLine + Environment.NewLine + puzzle);
+			
+			//TESTLINES
+			foreach (Cell cell in puzzle.grid)
+			{
+				foreach (int i in cell.PossibleValues)
+				{
+					Console.Write(i + " ");
+				}
+
+				Console.WriteLine();
 			}
 			Console.WriteLine();
 			//END TESTLINES
@@ -32,290 +46,113 @@ namespace KillerSudokuSolver
 			Console.Read();
 		}
 
-		class KillerSudoku {
-			readonly bool killerX; //Whether this is a KillerX Sudoku
-			readonly int dimension;
-			readonly int maxValue; //Maximum value of any cell
+		//Parses all the required info to build a Killer Sudoku and hands it to the constructor
+		static KillerSudoku Parse(string file)
+		{
+			KillerSudoku output = null;
 
-            readonly public Cell[,] grid;
-			readonly Row[] rows;
-            readonly Column[] columns;
-            readonly Diagonal[] diagonals;
-            readonly Block[,] blocks;
-            readonly House[] houses;
-            readonly Cage[] cages;
-
-			//The constructor not only builds the KillerSudoko itself, but initializes and interconnects all its components
-			public KillerSudoku(Cell[,] grid, int dimension, int maxValue, Cage[] cages, bool killerX, int extremeSum)
+			try
 			{
-				this.dimension = dimension;
-				this.maxValue = maxValue;
-				this.grid = grid;
-				rows = new Row[maxValue];
-				columns = new Column[maxValue];
-				diagonals = new Diagonal[2];
-				blocks = new Block[dimension, dimension];
-				this.cages = cages;
-				this.killerX = killerX;
-
-				//All rows, columns and Blocks
-				int housesAmount = maxValue * 3 + cages.Length;
-
-				//KillerX Sudokus include the two diagonals
-				if (killerX)
+				using (StreamReader sr = new StreamReader(file))
 				{
-					housesAmount += 2;
-				}
+					int housesPerCell = 4; //The amount of Houses each Cell is a part of. This is static, except for Diagonals
+					int totalCellCounter = 0; //The total amount of Cells parsed at any point
 
-				houses = new House[housesAmount];
+					int tempX; //The X coordinate for the current Cell
+					int tempY; //The Y coordinate for the current Cell
+					int counter; //Keeps track of where on the parsed line we are
+					int cellsInLine; //The amount of Cells on the current line
+					Cell tempCell = null; //The Cell currently being evaluated
+					Cell[] cageCells; //The list of Cells prepared for a Cage
 
-				int counter = 0;
-				Cell[] tempRow;
-				Cell[] tempColumn;
+					string line = sr.ReadLine();
+					string[] splitLine = line.Split(' ');
 
-				Cell[] tempDiagonal1 = new Cell[maxValue];
-				Cell[] tempDiagonal2 = new Cell[maxValue];
+					int dimension = Int32.Parse(splitLine[0]);
+					int maxValue = dimension * dimension;
+					int extremeSum = maxValue + 1; //The value of the lowest and highest possible values combined
+					Cell[,] grid = new Cell[maxValue, maxValue];
 
-                foreach (Cage cage in cages) {
-                    houses[counter] = cage;
-                    counter++;
-                }
+					int cagesAmount = Int32.Parse(splitLine[1]);
+					Cage[] cages = new Cage[cagesAmount];
 
-                for (int y = 0; y < maxValue; y++)
-				{
-					tempRow = new Cell[maxValue];
+					bool killerX = Boolean.Parse(splitLine[2]);
 
-					for (int x = 0; x < maxValue; x++)
+					SortedSet<int> PossibleValues;
+
+					//Make all the Cells and Cages
+					for (int i = 0; i < cagesAmount; i++)
 					{
-						tempRow[x] = grid[x, y];
+						splitLine = sr.ReadLine().Split(' ');
+						cellsInLine = splitLine.Length - 2;
+						totalCellCounter += cellsInLine;
+						cageCells = new Cell[cellsInLine / 2];
 
-                        //Check if this Cell is part of a Diagonal if this is a killerX Sudoku
-						if (killerX)
+						counter = 0;
+
+						//Handles the Cell info on the line
+						while (counter * 2 < cellsInLine)
 						{
-							//If this coordinate is in the bottom left to top right Diagonal
-							if (x == y)
+							tempX = int.Parse(splitLine[counter * 2]) - 1;
+							tempY = int.Parse(splitLine[counter * 2 + 1]) - 1;
+
+							//Check if this Cell is part of a Diagonal if this is a killerX Sudoku
+							if (killerX)
 							{
-								tempDiagonal1[x] = grid[x, y];
+								//If this Cell is in either of the Diagonals
+								if (tempX == tempY || tempX + tempY == extremeSum)
+								{
+									tempCell = new Cell(maxValue, housesPerCell + 1);
+								}
+							}
+							else
+							{
+								tempCell = new Cell(maxValue, housesPerCell);
 							}
 
-							//If this coordinate is in the top left to bottom right Diagonal
-							if (x + y == extremeSum)
-							{
-								tempDiagonal2[x] = grid[x, y];
-							}
+							cageCells[counter] = tempCell;
+							grid[tempX, tempY] = tempCell;
+							counter++;
 						}
-					}
-                    
-					rows[y] = new Row(y, tempRow, maxValue);
 
-                    foreach(Cell cell in tempRow)
-                    {
-                        cell.Row = rows[y];
-                    }
+						PossibleValues = new SortedSet<int>();
 
-					houses[counter] = rows[y];
-					counter++;
-				}
-
-                //Build the Column objects
-				for (int x = 0; x < maxValue; x++)
-				{
-					tempColumn = new Cell[maxValue];
-
-					for (int y = 0; y < maxValue; y++)
-					{
-						tempColumn[y] = grid[x, y];
-					}
-
-					columns[x] = new Column(x, tempColumn, maxValue);
-
-                    foreach (Cell cell in tempColumn)
-                    {
-                        cell.Column = columns[x];
-                    }
-
-                    houses[counter] = columns[x];
-					counter++;
-				}
-
-                //Adds the Diagonals if this is a KillerX Sudoku
-				if (killerX)
-				{
-					Diagonal tempDiagonal = new Diagonal(0, tempDiagonal1, maxValue);
-
-                    foreach (Cell cell in tempDiagonal.Cells)
-                    {
-                        cell.Diagonal = tempDiagonal;
-                    }
-
-                    diagonals[0] = tempDiagonal;
-					houses[counter] = tempDiagonal;
-					counter++;
-
-					tempDiagonal = new Diagonal(1, tempDiagonal2, maxValue);
-
-                    foreach (Cell cell in tempDiagonal.Cells)
-                    {
-                        cell.Diagonal = tempDiagonal;
-                    }
-
-                    diagonals[1] = tempDiagonal;
-					houses[counter] = tempDiagonal;
-					counter++;
-				}
-
-				Cell[] tempCells = new Cell[maxValue];
-                Block tempBlock;
-                int cellCounter = 0;
-
-                //Walk through all Cells in the Grid Block by Block and create these Block objects
-				for (int xFactor = 0; xFactor < maxValue; xFactor += dimension)
-				{
-					for (int yFactor = 0; yFactor < maxValue; yFactor += dimension)
-					{
-						for (int x = 0 + xFactor; x < dimension + xFactor; x++)
+						for (int n = 1; n <= maxValue; n++)
 						{
-							for (int y = 0 + yFactor; y < dimension + yFactor; y++)
-							{
-								tempCells[cellCounter] = grid[x, y];
-								cellCounter++;
-							}
+							PossibleValues.Add(n);
 						}
 
-                        tempBlock = new Block(tempCells, maxValue);
-                        blocks[xFactor / dimension, yFactor / dimension] = tempBlock;
-                        cellCounter = 0;
+						//Handles the Cage parameters on the line
+						cages[i] = new Cage(i, cageCells, int.Parse(splitLine[counter * 2]), splitLine[counter * 2 + 1][0], PossibleValues);
 
-                        foreach(Cell cell in tempCells)
-                        {
-                            cell.Block = tempBlock;
-                        }
-
-                        houses[counter] = tempBlock;
-                        counter++;
-                    }
-				}
-
-				//Collect all of each Cell's Houses in their House list
-				foreach(Cell cell in grid)
-				{
-					cell.Houses.Add(cell.Row);
-					cell.Houses.Add(cell.Column);
-					cell.Houses.Add(cell.Cage);
-					cell.Houses.Add(cell.Block);
-
-					if(cell.Diagonal != null)
-					{
-						cell.Houses.Add(cell.Diagonal);
-					}
-				}
-			}
-
-            //Does a number of basic checks to see if there are likely errors in the parsed puzzle
-			public void Verify()
-			{
-                //Checks if any position in the Grid doesn't have an initialized Cell
-				foreach (Cell cell in grid)
-				{
-					if (cell == null)
-					{
-						Console.WriteLine("Unitialized Cell in parsed puzzle");
-					}
-				}
-
-				int sum = 0;
-
-                //Generates the sum of all cages
-				foreach (Cage cage in cages)
-				{
-					sum += cage.Goal;
-				}
-
-                //and checks if they equal what the sum of all PossibleValues should be
-                if (sum != maxValue * maxValue * (maxValue + 1) / 2)
-				{
-					Console.WriteLine("Sum of Cages doesn't add up to required sum of Grid");
-				}
-
-                //Checks if any Houses are too large
-                foreach (House house in houses)
-                {
-                    if(house.Cells.Length > maxValue)
-                    {
-                        Console.WriteLine("There is a House too large for Dimension");
-                    }
-                }
-            }
-
-            //Solves this puzzle through a Priority Queue and several possible steps
-			public void Solve() {
-                Queue<Rule> priorityQueue = new Queue<Rule>();
-
-                foreach (Cage cage in cages)
-                {
-                    priorityQueue.Enqueue(new RemoveHighLow(cage,0));
-                }
-
-                while(priorityQueue.Count != 0)
-                {
-                    List<Cell> improvedCells = priorityQueue.Dequeue().Execute();
-
-					foreach (Cell cell in improvedCells)
-					{
-						priorityQueue.Enqueue(new RemoveDuplicatePossibilities(cell, 0));
-
-						foreach (House house in cell.Houses)
+						foreach (Cell cell in cageCells)
 						{
-							Console.WriteLine(house.GetType());
-							priorityQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
+							cell.Cage = cages[i];
 						}
 					}
+
+					if (sr.ReadLine() != null)
+					{
+						Console.WriteLine("The parsed file contains more than the stated " + cagesAmount + " cages.");
+					}
+
+					totalCellCounter /= 2;
+
+					if (totalCellCounter != dimension * dimension * dimension * dimension)
+					{
+						Console.WriteLine("The amount of Cells in the parsed file doesn't match the required amount: " + totalCellCounter);
+					}
+
+					//Build the Killer Sudoku based on the parsed input
+					output = new KillerSudoku(grid, dimension, maxValue, cages, killerX, extremeSum);
 				}
 			}
-
-            //Creates a String representation of the puzzle for easy printing
-			public override string ToString()
+			catch (Exception e)
 			{
-				int whiteSpaceLength = (maxValue - 1).ToString().Length;
-				string whiteSpace = String.Concat(Enumerable.Repeat(" ", whiteSpaceLength));
-				string lineSpace = String.Concat(Enumerable.Repeat("-", whiteSpaceLength)) + "-";
-				string output = whiteSpace + "  ";
-
-				for (int i = 1; i <= maxValue; i++)
-				{
-					output += " " + i;
-				}
-
-				output += Environment.NewLine + whiteSpace + " /-";
-
-				for (int i = 0; i < maxValue; i++)
-				{
-					output += lineSpace;
-				}
-
-				output += "\\" + Environment.NewLine;
-
-				for (int y = maxValue - 1; y >= 0; y--)
-				{
-					output += rows[y];
-				}
-
-				output += whiteSpace + " \\-";
-
-				for (int i = 0; i < maxValue; i++)
-				{
-					output += lineSpace;
-				}
-
-				output += "/" + Environment.NewLine + whiteSpace + "  ";
-
-				for (int i = 1; i <= maxValue; i++)
-				{
-					output += " " + i;
-				}
-
-				return output;
+				Console.WriteLine("There was a problem in the attempt to parse the KillerSudoku file:" + Environment.NewLine + e.Message);
 			}
+
+			return output;
 		}
 	}
 }
