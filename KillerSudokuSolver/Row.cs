@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace KillerSudokuSolver
@@ -8,18 +7,11 @@ namespace KillerSudokuSolver
     {
 		readonly int dimension;
 
-        public Row(int y, Cell[] cells, int maxValue, int dimension)
+        public Row(int y, Cell[] cells, int dimension)
         {
             Id = y;
             Cells = cells;
 			this.dimension = dimension;
-
-            PossibleValues = new SortedSet<int>();
-
-            for (int i = 1; i <= maxValue; i++)
-            {
-                PossibleValues.Add(i);
-            }
         }
 
 		public override string ToString()

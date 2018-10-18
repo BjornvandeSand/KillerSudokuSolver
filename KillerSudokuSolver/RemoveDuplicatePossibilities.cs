@@ -4,27 +4,27 @@ namespace KillerSudokuSolver
 {
     class RemoveDuplicatePossibilities : Rule
     {
-        //Removes PossibleValues that are no longer possible, because they're already the final Value for this Cell
-        public RemoveDuplicatePossibilities(House target, float priority)
+        //Removes PossibleValues that are no longer possible in connected Houses, because they're already fulfilled by the Value for this Cell
+        public RemoveDuplicatePossibilities(Cell target, float priority)
         {
-            Target = target;
+			Target = target;
             Priority = priority;
         }
 
         public override List<Cell> Execute() {
-			Cell Target = this.Target as Cell;
+			List<Cell> changedCells = new List<Cell>();
 
-			List<Cell> output = new List<Cell>();
+			Cell target = Target as Cell;
 
-			if(Target.Value != 0)
+			if(target.Value != 0) //Means the Cell is finalized
 			{
-				foreach(House house in Target.Houses)
+				foreach (House house in target.Houses)
 				{
-					output.AddRange(house.RemovePossibleValue(Target.Value));
+					changedCells.AddRange(house.RemovePossibleValue(target.Value));
 				}
 			}
 
-			return output; //Return the list of upcoming Cells to evaluate
+			return changedCells; //Return the list of upcoming Cells to evaluate
         }
     }
 }

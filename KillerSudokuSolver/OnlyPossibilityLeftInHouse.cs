@@ -10,43 +10,52 @@ namespace KillerSudokuSolver
             Priority = priority;
         }
 
-		//Checks if a possible value is found on only 1 Cell in a House
+		//Checks if a possible value is found in only 1 Cell in a House
         public override List<Cell> Execute() {
-            List<Cell> output = new List<Cell>();
+			SortedSet<int> possibleValues = Target.PossibleValues(); //Gathers all the values possible in this House
+			List<Cell> changedCells = new List<Cell>(possibleValues.Count); //Contains all the Cells changed by this Rule application
 
-			int valueCounter;
-			Cell cellTracker;
+			int valueCounter; //Keeps track of how many times the current possible Value is found
+			Cell cellTracker; // Keeps track of the last Cell found to allow the possible Value
 
-
-
-			for (int i = 1; i <= 9; i++)
+			//This rule is only correct for non-Cage Houses and Cages where the remaining possible Values are all certain to exist in the Cage
+			if (!(Target is Cage) || possibleValues.Count == Target.Cells.Length)
 			{
-				valueCounter = 0;
-				cellTracker = null;
-
-				foreach (Cell cell in Target.Cells) {
-					if (cell.PossibleValues.Contains(i))
-					{
-						valueCounter++;
-						cellTracker = cell;
-					}
-				}
-
-				if (valueCounter == 1)
+				//Goes through all the possible Values
+				foreach (int i in possibleValues)
 				{
-					for (int j = 1; j <= 9; j++)
+					valueCounter = 0;
+					cellTracker = null;
+
+					//Goes through all the Cells in this House
+					foreach (Cell cell in Target.Cells)
 					{
-						if (i != j)
+						//An instance of the current Value is found
+						if (cell.PossibleValues.Contains(i))
 						{
-							cellTracker.RemovePossibleValueIfPresent(i);
+							valueCounter++;
+							cellTracker = cell;
 						}
 					}
 
-					output.Add(cellTracker);
+					//There was only one instance
+					if (valueCounter == 1)
+					{
+						//Remove all other possible Values so only the correct one remains
+						for (int j = 1; j <= cellTracker.Row.Cells.Length; j++)
+						{
+							if (j != i)
+							{
+								cellTracker.RemovePossibleValueIfPresent(j);
+							}
+						}
+
+						changedCells.Add(cellTracker); //Add this Cell to the list of changed ones
+					}
 				}
 			}
 
-			return output; //Return the list of upcoming Cells to evaluate
+			return changedCells; //Return the list of changed Cells to evaluate
         }
     }
 }

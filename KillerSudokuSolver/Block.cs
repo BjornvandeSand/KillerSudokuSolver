@@ -1,19 +1,16 @@
-using System.Collections.Generic;
-
 namespace KillerSudokuSolver
 {
 	class Block : House
     {
-        public Block(Cell[] c, int maxValue)
+        public Block(int id, Cell[] c)
         {
-            Cells = c;
+			Id = id;
+			Cells = new Cell[c.Length];
 
-            PossibleValues = new SortedSet<int>();
-
-            for (int i = 1; i <= maxValue; i++)
-            {
-                PossibleValues.Add(i);
-            }
-        }
+			for (int i = 0; i < c.Length; i++)
+			{
+				Cells[i] = c[i];
+			}
+		}
     }
 }

@@ -6,18 +6,29 @@ namespace KillerSudokuSolver
     {
         public Cell[] Cells { get; set; }
         public int Id { get;  set; }
-        public SortedSet<int> PossibleValues { get; set; }
+
+		public SortedSet<int> PossibleValues()
+		{
+			SortedSet<int> output = new SortedSet<int>();
+
+			foreach (Cell cell in Cells)
+			{
+				output.UnionWith(cell.PossibleValues);
+			}
+
+			return output;
+		}
 
 		public List<Cell> RemovePossibleValue(int i)
 		{
-			List<Cell> output = new List<Cell>();
-			foreach(Cell cell in Cells)
+			List<Cell> output = new List<Cell>(Cells.Length);
+
+			foreach (Cell cell in Cells)
 			{
-				if(cell.RemovePossibleValueIfPresent(i))
+				if (cell.RemovePossibleValueIfPresent(i))
 				{
 					output.Add(cell);
 				}
-					
 			}
 
 			return output;

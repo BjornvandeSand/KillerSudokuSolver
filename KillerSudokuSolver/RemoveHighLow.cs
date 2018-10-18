@@ -8,29 +8,32 @@ namespace KillerSudokuSolver
         //Removes Values that are too high or low to be possible with the Cage's sum and returns affected Cells
         public RemoveHighLow(Cage target, float priority)
         {
-            this.Target = target;
-            this.Priority = priority;
+            Target = target;
+            Priority = priority;
         }
 
         public override List<Cell> Execute() {
 			Cage Target = this.Target as Cage;
+			Target = Target.GenerateSuccessor();
 
-            List<Cell> output = new List<Cell>(Target.Cells.Length);
+            List<Cell> changedCells = new List<Cell>(Target.Cells.Length);
 
 			int tempSum = 0; //Accumulator for values as we approach the Goal
 
+			SortedSet<int> possibleValues = Target.PossibleValues();
+
 			for (int i = 0; i < Target.Cells.Length - 1; i++)
 			{
-				tempSum += Target.PossibleValues.ElementAt(i);
+				tempSum += possibleValues.ElementAt(i);
 			}
 
 			int max = Target.Goal - tempSum;
 
 			tempSum = 0;
 
-			for (int i = Target.PossibleValues.Count - 1; i > Target.PossibleValues.Count - Target.Cells.Length; i--)
+			for (int i = possibleValues.Count - 1; i > possibleValues.Count - Target.Cells.Length; i--)
 			{
-				tempSum += Target.PossibleValues.ElementAt(i);
+				tempSum += possibleValues.ElementAt(i);
 			}
 
 			int min = Target.Goal - tempSum;
@@ -45,9 +48,9 @@ namespace KillerSudokuSolver
 						//Check if this Value is still listed as possible for the Cell and remove it if so
 						if (cell.RemovePossibleValueIfPresent(i))
 						{
-                            if (!output.Contains(cell)) //Check if this Cell isn't already listed as one that should be re-evaluated
+                            if (!changedCells.Contains(cell)) //Check if this Cell isn't already listed as one that should be re-evaluated
                             {
-                                output.Add(cell); //Add it to the list of upcoming evaluations
+								changedCells.Add(cell); //Add it to the list of upcoming evaluations
                             }
                         }
                     }
@@ -61,16 +64,16 @@ namespace KillerSudokuSolver
                         //Check if this Value is still listed as possible for the Cell and remove it if so
                         if (cell.RemovePossibleValueIfPresent(i))
                         {
-                            if (!output.Contains(cell)) //Check if this Cell isn't already listed as one that should be re-evaluated
+                            if (!changedCells.Contains(cell)) //Check if this Cell isn't already listed as one that should be re-evaluated
                             {
-                                output.Add(cell); //Add it to the list of upcoming evaluations
+								changedCells.Add(cell); //Add it to the list of upcoming evaluations
                             }
                         }
                     }
                 }
 			}
 
-			return output; //Return the list of upcoming Cells to evaluate
+			return changedCells; //Return the list of upcoming Cells to evaluate
         }
     }
 }

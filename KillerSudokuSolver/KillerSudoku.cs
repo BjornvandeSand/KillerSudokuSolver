@@ -11,8 +11,8 @@ namespace KillerSudokuSolver
 		readonly int maxValue; //Maximum value of any cell
 
 		readonly public Cell[,] grid;
-		readonly Row[] rows;
-		readonly Column[] columns;
+		readonly public Row[] rows;
+		readonly public Column[] columns;
 		readonly Diagonal[] diagonals;
 		readonly Block[,] blocks;
 		readonly House[] houses;
@@ -80,7 +80,7 @@ namespace KillerSudokuSolver
 					}
 				}
 
-				rows[y] = new Row(y, tempRow, maxValue, dimension);
+				rows[y] = new Row(y, tempRow, dimension);
 
 				foreach (Cell cell in tempRow)
 				{
@@ -101,7 +101,7 @@ namespace KillerSudokuSolver
 					tempColumn[y] = grid[x, y];
 				}
 
-				columns[x] = new Column(x, tempColumn, maxValue);
+				columns[x] = new Column(x, tempColumn);
 
 				foreach (Cell cell in tempColumn)
 				{
@@ -115,7 +115,7 @@ namespace KillerSudokuSolver
 			//Adds the Diagonals if this is a KillerX Sudoku
 			if (killerX)
 			{
-				Diagonal tempDiagonal = new Diagonal(0, tempDiagonal1, maxValue);
+				Diagonal tempDiagonal = new Diagonal(0, tempDiagonal1);
 
 				foreach (Cell cell in tempDiagonal.Cells)
 				{
@@ -126,7 +126,7 @@ namespace KillerSudokuSolver
 				houses[counter] = tempDiagonal;
 				counter++;
 
-				tempDiagonal = new Diagonal(1, tempDiagonal2, maxValue);
+				tempDiagonal = new Diagonal(1, tempDiagonal2);
 
 				foreach (Cell cell in tempDiagonal.Cells)
 				{
@@ -141,6 +141,7 @@ namespace KillerSudokuSolver
 			Cell[] tempCells = new Cell[maxValue];
 			Block tempBlock;
 			int cellCounter = 0;
+			int blockCounter = 0;
 
 			//Walk through all Cells in the Grid Block by Block and create these Block objects
 			for (int xFactor = 0; xFactor < maxValue; xFactor += dimension)
@@ -156,7 +157,8 @@ namespace KillerSudokuSolver
 						}
 					}
 
-					tempBlock = new Block(tempCells, maxValue);
+					tempBlock = new Block(blockCounter, tempCells);
+					blockCounter++;
 					blocks[xFactor / dimension, yFactor / dimension] = tempBlock;
 					cellCounter = 0;
 
@@ -175,7 +177,7 @@ namespace KillerSudokuSolver
 			{
 				cell.Houses.Add(cell.Row);
 				cell.Houses.Add(cell.Column);
-				//cell.Houses.Add(cell.Cage);
+				cell.Houses.Add(cell.Cage);
 				cell.Houses.Add(cell.Block);
 
 				if (cell.Diagonal != null)
@@ -224,26 +226,35 @@ namespace KillerSudokuSolver
 		//Solves this puzzle through a Priority Queue and several possible steps
 		public void Solve()
 		{
-			Queue<Rule> priorityQueue = new Queue<Rule>();
+			Queue<Rule> rulesQueue = new Queue<Rule>();
 
 			foreach (Cage cage in cages)
 			{
-				priorityQueue.Enqueue(new RemoveHighLow(cage, 0));
+				rulesQueue.Enqueue(new RemoveHighLow(cage, 0));
 			}
 
-			while (priorityQueue.Count != 0)
+			List<Cell> improvedCells = new List<Cell>();
+
+			while (rulesQueue.Count != 0)
 			{
-				List<Cell> improvedCells = priorityQueue.Dequeue().Execute();
+				improvedCells.AddRange(rulesQueue.Dequeue().Execute());
+			}
 
-				foreach (Cell cell in improvedCells)
+			foreach (Cell cell in improvedCells)
+			{
+				rulesQueue.Enqueue(new RemoveDuplicatePossibilities(cell, 0));
+
+				foreach (House house in cell.Houses)
 				{
-					priorityQueue.Enqueue(new RemoveDuplicatePossibilities(cell, 0));
-
-					foreach (House house in cell.Houses)
-					{
-						priorityQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
-					}
+					rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
 				}
+			}
+
+			improvedCells = new List<Cell>();
+
+			while (rulesQueue.Count != 0)
+			{
+				improvedCells.AddRange(rulesQueue.Dequeue().Execute());
 			}
 		}
 

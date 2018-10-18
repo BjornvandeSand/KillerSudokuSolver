@@ -19,7 +19,9 @@ namespace KillerSudokuSolver
 
         public List<House> Houses { get; set; }
 
-        public Cell(int maxValue, int housesAmount)
+		public new SortedSet<int> PossibleValues { get; set; }
+
+		public Cell(int maxValue, int housesAmount)
         {
             Value = 0;
             PossibleValues = new SortedSet<int>();
@@ -35,8 +37,9 @@ namespace KillerSudokuSolver
         {
             if (PossibleValues.Count == 1)
             {
-                Value = PossibleValues.ElementAt(0); //Set the final Value
-            }
+				Value = PossibleValues.ElementAt(0); //Set the final Value
+				PossibleValues.Clear();
+			}
         }
 
 		public bool RemovePossibleValueIfPresent(int i)
@@ -45,8 +48,8 @@ namespace KillerSudokuSolver
 
 			if (PossibleValues.Contains(i))
 			{
-				change = true;
 				PossibleValues.Remove(i);
+				change = true;
 			}
 
 			EvaluatePossibleValues();

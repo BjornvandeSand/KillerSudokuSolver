@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace KillerSudokuSolver
@@ -19,20 +18,24 @@ namespace KillerSudokuSolver
 
 			puzzle.Solve();
 
+			Console.WriteLine(Environment.NewLine + "Name: " + Path.GetFileNameWithoutExtension(path) + Environment.NewLine + Environment.NewLine + puzzle + Environment.NewLine);
+
 			if (puzzle.Solved())
 			{
 				Console.WriteLine("Puzzle solved");
 			}
 			else
 			{
-				Console.WriteLine("Puzzle unsolved, but no more improving rules found");
+				Console.WriteLine("Puzzle unsolved, but no more improving rules found.");
 			}
 
-			Console.WriteLine(Environment.NewLine + "Name: " + Path.GetFileNameWithoutExtension(path) + Environment.NewLine + Environment.NewLine + puzzle);
-			
 			//TESTLINES
+			Console.WriteLine("Possible values left:");
+
 			foreach (Cell cell in puzzle.grid)
 			{
+				Console.Write("Cell[" + cell.Column.Id + "," + cell.Row.Id + "] ");
+
 				foreach (int i in cell.PossibleValues)
 				{
 					Console.Write(i + " ");
@@ -40,9 +43,8 @@ namespace KillerSudokuSolver
 
 				Console.WriteLine();
 			}
-			Console.WriteLine();
 			//END TESTLINES
-
+			
 			Console.Read();
 		}
 
@@ -56,6 +58,7 @@ namespace KillerSudokuSolver
 				using (StreamReader sr = new StreamReader(file))
 				{
 					int housesPerCell = 4; //The amount of Houses each Cell is a part of. This is static, except for Diagonals
+					int housesPerXCell = 5; //The amount of Houses for a Cell that is part of a Diagonal in a KillerX
 					int totalCellCounter = 0; //The total amount of Cells parsed at any point
 
 					int tempX; //The X coordinate for the current Cell
@@ -77,8 +80,6 @@ namespace KillerSudokuSolver
 					Cage[] cages = new Cage[cagesAmount];
 
 					bool killerX = Boolean.Parse(splitLine[2]);
-
-					SortedSet<int> PossibleValues;
 
 					//Make all the Cells and Cages
 					for (int i = 0; i < cagesAmount; i++)
@@ -102,7 +103,7 @@ namespace KillerSudokuSolver
 								//If this Cell is in either of the Diagonals
 								if (tempX == tempY || tempX + tempY == extremeSum)
 								{
-									tempCell = new Cell(maxValue, housesPerCell + 1);
+									tempCell = new Cell(maxValue, housesPerXCell);
 								}
 							}
 							else
@@ -115,15 +116,8 @@ namespace KillerSudokuSolver
 							counter++;
 						}
 
-						PossibleValues = new SortedSet<int>();
-
-						for (int n = 1; n <= maxValue; n++)
-						{
-							PossibleValues.Add(n);
-						}
-
 						//Handles the Cage parameters on the line
-						cages[i] = new Cage(i, cageCells, int.Parse(splitLine[counter * 2]), splitLine[counter * 2 + 1][0], PossibleValues);
+						cages[i] = new Cage(i, cageCells, int.Parse(splitLine[counter * 2]), splitLine[counter * 2 + 1][0]);
 
 						foreach (Cell cell in cageCells)
 						{

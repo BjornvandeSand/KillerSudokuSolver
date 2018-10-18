@@ -1,20 +1,11 @@
-﻿using System.Collections.Generic;
-
-namespace KillerSudokuSolver
+﻿namespace KillerSudokuSolver
 {
 	class Diagonal : House
 	{
-		public Diagonal(int id, Cell[] cells, int maxValue)
+		public Diagonal(int id, Cell[] cells)
 		{
 			Id = id;
 			Cells = cells;
-
-			PossibleValues = new SortedSet<int>();
-
-			for (int i = 1; i <= maxValue; i++)
-			{
-				PossibleValues.Add(i);
-			}
 		}
 	}
 }
