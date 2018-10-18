@@ -29,7 +29,7 @@ namespace KillerSudokuSolver
 
 					//Goes through all the Cells in this House
 					foreach (Cell cell in Target.Cells)
-					{
+					{						
 						//An instance of the current Value is found
 						if (cell.PossibleValues.Contains(i))
 						{

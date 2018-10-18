@@ -7,8 +7,8 @@ namespace KillerSudokuSolver
 	class KillerSudoku
 	{
 		readonly bool killerX; //Whether this is a KillerX Sudoku
-		readonly int dimension;
-		readonly int maxValue; //Maximum value of any cell
+		readonly int dimension; //Dimension of the puzzle
+		readonly int maxValue; //Maximum Value of any Cell
 
 		readonly public Cell[,] grid;
 		readonly public Row[] rows;
@@ -31,10 +31,10 @@ namespace KillerSudokuSolver
 			this.cages = cages;
 			this.killerX = killerX;
 
-			//All rows, columns and Blocks
+			//All Rows, Columns and Blocks
 			int housesAmount = maxValue * 3 + cages.Length;
 
-			//KillerX Sudokus include the two diagonals
+			//KillerX Sudokus include the two Diagonals
 			if (killerX)
 			{
 				housesAmount += 2;
@@ -190,7 +190,7 @@ namespace KillerSudokuSolver
 		//Does a number of basic checks to see if there are likely errors in the parsed puzzle
 		public void Verify()
 		{
-			//Checks if any position in the Grid doesn't have an initialized Cell
+			//Checks if any position in the Grid has  an uninitialized Cell
 			foreach (Cell cell in grid)
 			{
 				if (cell == null)
@@ -201,13 +201,13 @@ namespace KillerSudokuSolver
 
 			int sum = 0;
 
-			//Generates the sum of all cages
+			//Generates the sum of all Cages
 			foreach (Cage cage in cages)
 			{
 				sum += cage.Goal;
 			}
 
-			//and checks if they equal what the sum of all PossibleValues should be
+			//Checks if it equals what the sum of all possible Values should be
 			if (sum != maxValue * maxValue * (maxValue + 1) / 2)
 			{
 				Console.WriteLine("Sum of Cages doesn't add up to required sum of Grid");
@@ -240,17 +240,30 @@ namespace KillerSudokuSolver
 				improvedCells.AddRange(rulesQueue.Dequeue().Execute());
 			}
 
+			//bool test = true;
+
 			foreach (Cell cell in improvedCells)
 			{
 				rulesQueue.Enqueue(new RemoveDuplicatePossibilities(cell, 0));
-
-				foreach (House house in cell.Houses)
-				{
-					rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
-				}
 			}
 
 			improvedCells = new List<Cell>();
+
+			while (rulesQueue.Count != 0)
+			{
+				improvedCells.AddRange(rulesQueue.Dequeue().Execute());
+			}
+
+			foreach (Cell cell in improvedCells)
+			{
+				foreach (House house in cell.Houses)
+				{
+					if (house is Column)
+					{
+						rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
+					}
+				}
+			}
 
 			while (rulesQueue.Count != 0)
 			{

@@ -5,7 +5,7 @@ namespace KillerSudokuSolver
 {
     class Cell : House
     {
-        public int Value { get; set; } //The final Value for this Cell
+		public int Value { get; set; } //The final Value for this Cell
 
         public Cage Cage { get; set; }
 

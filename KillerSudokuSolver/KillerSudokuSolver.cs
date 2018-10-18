@@ -26,25 +26,35 @@ namespace KillerSudokuSolver
 			}
 			else
 			{
-				Console.WriteLine("Puzzle unsolved, but no more improving rules found.");
+				Console.WriteLine(Environment.NewLine + "Puzzle unsolved, but no more improving rules found.");
 			}
 
-			//TESTLINES
+			int valuesLeftToElimate = 0;
 			Console.WriteLine("Possible values left:");
 
 			foreach (Cell cell in puzzle.grid)
 			{
-				Console.Write("Cell[" + cell.Column.Id + "," + cell.Row.Id + "] ");
+				Console.Write("Cell[" + (cell.Column.Id + 1) + "," + (cell.Row.Id + 1) + "] ");
 
 				foreach (int i in cell.PossibleValues)
 				{
+					valuesLeftToElimate++;
 					Console.Write(i + " ");
 				}
 
 				Console.WriteLine();
 			}
+
+			Console.WriteLine("There are " + valuesLeftToElimate + " values left to eliminate.");
+
+			Console.Read();
+
+			//TESTLINES
+
+
+
 			//END TESTLINES
-			
+
 			Console.Read();
 		}
 
@@ -57,37 +67,39 @@ namespace KillerSudokuSolver
 			{
 				using (StreamReader sr = new StreamReader(file))
 				{
-					int housesPerCell = 4; //The amount of Houses each Cell is a part of. This is static, except for Diagonals
-					int housesPerXCell = 5; //The amount of Houses for a Cell that is part of a Diagonal in a KillerX
-					int totalCellCounter = 0; //The total amount of Cells parsed at any point
+					const int housesPerCell = 4; //The amount of Houses each Cell is a part of. This is static, except for Diagonals
+					const int housesPerXCell = 5; //The amount of Houses for a Cell that is part of a Diagonal in a KillerX
 
+					int cellCounter = 0; //The total amount of Cells parsed at any point
 					int tempX; //The X coordinate for the current Cell
 					int tempY; //The Y coordinate for the current Cell
 					int counter; //Keeps track of where on the parsed line we are
 					int cellsInLine; //The amount of Cells on the current line
+
 					Cell tempCell = null; //The Cell currently being evaluated
 					Cell[] cageCells; //The list of Cells prepared for a Cage
 
 					string line = sr.ReadLine();
 					string[] splitLine = line.Split(' ');
 
-					int dimension = Int32.Parse(splitLine[0]);
+					int dimension = int.Parse(splitLine[0]);
 					int maxValue = dimension * dimension;
-					int extremeSum = maxValue + 1; //The value of the lowest and highest possible values combined
+					int extremeSum = maxValue + 1; //The value of the lowest and highest possible Values combined
+
 					Cell[,] grid = new Cell[maxValue, maxValue];
 
-					int cagesAmount = Int32.Parse(splitLine[1]);
+					int cagesAmount = int.Parse(splitLine[1]);
 					Cage[] cages = new Cage[cagesAmount];
 
-					bool killerX = Boolean.Parse(splitLine[2]);
+					bool killerX = bool.Parse(splitLine[2]);
 
 					//Make all the Cells and Cages
 					for (int i = 0; i < cagesAmount; i++)
 					{
 						splitLine = sr.ReadLine().Split(' ');
 						cellsInLine = splitLine.Length - 2;
-						totalCellCounter += cellsInLine;
 						cageCells = new Cell[cellsInLine / 2];
+						cellCounter += cageCells.Length;
 
 						counter = 0;
 
@@ -130,11 +142,9 @@ namespace KillerSudokuSolver
 						Console.WriteLine("The parsed file contains more than the stated " + cagesAmount + " cages.");
 					}
 
-					totalCellCounter /= 2;
-
-					if (totalCellCounter != dimension * dimension * dimension * dimension)
+					if (cellCounter != maxValue * maxValue)
 					{
-						Console.WriteLine("The amount of Cells in the parsed file doesn't match the required amount: " + totalCellCounter);
+						Console.WriteLine("The amount of Cells in the parsed file doesn't match the required amount: " + cellCounter);
 					}
 
 					//Build the Killer Sudoku based on the parsed input

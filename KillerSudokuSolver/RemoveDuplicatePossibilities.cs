@@ -16,7 +16,7 @@ namespace KillerSudokuSolver
 
 			Cell target = Target as Cell;
 
-			if(target.Value != 0) //Means the Cell is finalized
+			if (target.Value != 0 || true) //Means the Cell is finalized
 			{
 				foreach (House house in target.Houses)
 				{
