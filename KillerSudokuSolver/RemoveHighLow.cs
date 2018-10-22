@@ -12,11 +12,11 @@ namespace KillerSudokuSolver
             Priority = priority;
         }
 
-        public override List<Cell> Execute() {
+        public override HashSet<Cell> Execute() {
 			Cage Target = this.Target as Cage;
 			Target = Target.GenerateSuccessor();
 
-            List<Cell> changedCells = new List<Cell>(Target.Cells.Length);
+			HashSet<Cell> changedCells = new HashSet<Cell>();
 
 			int tempSum = 0; //Accumulator for values as we approach the Goal
 

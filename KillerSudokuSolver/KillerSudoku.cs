@@ -8,7 +8,8 @@ namespace KillerSudokuSolver
 	{
 		readonly bool killerX; //Whether this is a KillerX Sudoku
 		readonly int dimension; //Dimension of the puzzle
-		readonly int maxValue; //Maximum Value of any Cell
+		readonly public int maxCellValue; //Maximum Value of any Cell
+		readonly public int numberOfCells;//Total number of Cells
 
 		readonly public Cell[,] grid;
 		readonly public Row[] rows;
@@ -19,20 +20,21 @@ namespace KillerSudokuSolver
 		readonly Cage[] cages;
 
 		//The constructor not only builds the KillerSudoko itself, but initializes and interconnects all its components
-		public KillerSudoku(Cell[,] grid, int dimension, int maxValue, Cage[] cages, bool killerX, int extremeSum)
+		public KillerSudoku(Cell[,] grid, int dimension, int maxCellValue, Cage[] cages, bool killerX, int numberOfCells, int extremeSum)
 		{
 			this.dimension = dimension;
-			this.maxValue = maxValue;
+			this.maxCellValue = maxCellValue;
 			this.grid = grid;
-			rows = new Row[maxValue];
-			columns = new Column[maxValue];
+			this.numberOfCells = numberOfCells;
+			rows = new Row[maxCellValue];
+			columns = new Column[maxCellValue];
 			diagonals = new Diagonal[2];
 			blocks = new Block[dimension, dimension];
 			this.cages = cages;
 			this.killerX = killerX;
 
 			//All Rows, Columns and Blocks
-			int housesAmount = maxValue * 3 + cages.Length;
+			int housesAmount = maxCellValue * 3 + cages.Length;
 
 			//KillerX Sudokus include the two Diagonals
 			if (killerX)
@@ -46,8 +48,8 @@ namespace KillerSudokuSolver
 			Cell[] tempRow;
 			Cell[] tempColumn;
 
-			Cell[] tempDiagonal1 = new Cell[maxValue];
-			Cell[] tempDiagonal2 = new Cell[maxValue];
+			Cell[] tempDiagonal1 = new Cell[maxCellValue];
+			Cell[] tempDiagonal2 = new Cell[maxCellValue];
 
 			foreach (Cage cage in cages)
 			{
@@ -55,11 +57,11 @@ namespace KillerSudokuSolver
 				counter++;
 			}
 
-			for (int y = 0; y < maxValue; y++)
+			for (int y = 0; y < maxCellValue; y++)
 			{
-				tempRow = new Cell[maxValue];
+				tempRow = new Cell[maxCellValue];
 
-				for (int x = 0; x < maxValue; x++)
+				for (int x = 0; x < maxCellValue; x++)
 				{
 					tempRow[x] = grid[x, y];
 
@@ -92,11 +94,11 @@ namespace KillerSudokuSolver
 			}
 
 			//Build the Column objects
-			for (int x = 0; x < maxValue; x++)
+			for (int x = 0; x < maxCellValue; x++)
 			{
-				tempColumn = new Cell[maxValue];
+				tempColumn = new Cell[maxCellValue];
 
-				for (int y = 0; y < maxValue; y++)
+				for (int y = 0; y < maxCellValue; y++)
 				{
 					tempColumn[y] = grid[x, y];
 				}
@@ -138,15 +140,15 @@ namespace KillerSudokuSolver
 				counter++;
 			}
 
-			Cell[] tempCells = new Cell[maxValue];
+			Cell[] tempCells = new Cell[maxCellValue];
 			Block tempBlock;
 			int cellCounter = 0;
 			int blockCounter = 0;
 
 			//Walk through all Cells in the Grid Block by Block and create these Block objects
-			for (int xFactor = 0; xFactor < maxValue; xFactor += dimension)
+			for (int xFactor = 0; xFactor < maxCellValue; xFactor += dimension)
 			{
-				for (int yFactor = 0; yFactor < maxValue; yFactor += dimension)
+				for (int yFactor = 0; yFactor < maxCellValue; yFactor += dimension)
 				{
 					for (int x = 0 + xFactor; x < dimension + xFactor; x++)
 					{
@@ -208,7 +210,7 @@ namespace KillerSudokuSolver
 			}
 
 			//Checks if it equals what the sum of all possible Values should be
-			if (sum != maxValue * maxValue * (maxValue + 1) / 2)
+			if (sum != numberOfCells * (maxCellValue + 1) / 2)
 			{
 				Console.WriteLine("Sum of Cages doesn't add up to required sum of Grid");
 			}
@@ -216,7 +218,7 @@ namespace KillerSudokuSolver
 			//Checks if any Houses are too large
 			foreach (House house in houses)
 			{
-				if (house.Cells.Length > maxValue)
+				if (house.Cells.Length > maxCellValue)
 				{
 					Console.WriteLine("There is a House too large for Dimension");
 				}
@@ -226,49 +228,43 @@ namespace KillerSudokuSolver
 		//Solves this puzzle through a Priority Queue and several possible steps
 		public void Solve()
 		{
-			Queue<Rule> rulesQueue = new Queue<Rule>();
+			PriorityQueue<Rule> rulesQueue = new PriorityQueue<Rule>();
+			HashSet<Cell> improvedCells = new HashSet<Cell>();
+			HashSet<Cage> improvedCages = new HashSet<Cage>();
 
 			foreach (Cage cage in cages)
 			{
 				rulesQueue.Enqueue(new RemoveHighLow(cage, 0));
 			}
 
-			List<Cell> improvedCells = new List<Cell>();
+			int rulesEvaluated = 0;
 
-			while (rulesQueue.Count != 0)
+			while (rulesQueue.Count() != 0)
 			{
-				improvedCells.AddRange(rulesQueue.Dequeue().Execute());
-			}
+				rulesEvaluated++;
+				improvedCages.Clear();
+				improvedCells = rulesQueue.Dequeue().Execute();
 
-			//bool test = true;
-
-			foreach (Cell cell in improvedCells)
-			{
-				rulesQueue.Enqueue(new RemoveDuplicatePossibilities(cell, 0));
-			}
-
-			improvedCells = new List<Cell>();
-
-			while (rulesQueue.Count != 0)
-			{
-				improvedCells.AddRange(rulesQueue.Dequeue().Execute());
-			}
-
-			foreach (Cell cell in improvedCells)
-			{
-				foreach (House house in cell.Houses)
+				foreach (Cell cell in improvedCells)
 				{
-					if (house is Column)
+					rulesQueue.Enqueue(new RemoveDuplicatePossibilities(cell, 1));
+
+					foreach (House house in cell.Houses)
 					{
+						if (house is Cage)
+						{
+							if (improvedCages.Add(cell.Cage))
+							{
+								rulesQueue.Enqueue(new RemoveHighLow(cell.Cage, 0));
+							}
+						}
+
 						rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
 					}
 				}
 			}
 
-			while (rulesQueue.Count != 0)
-			{
-				improvedCells.AddRange(rulesQueue.Dequeue().Execute());
-			}
+			Console.WriteLine(rulesEvaluated + " rules were evaluated.");
 		}
 
 		public bool Solved()
@@ -289,7 +285,7 @@ namespace KillerSudokuSolver
 		//Creates a String representation of the puzzle for easy printing
 		public override string ToString()
 		{
-			int whiteSpaceLength = (maxValue - 1).ToString().Length;
+			int whiteSpaceLength = (maxCellValue - 1).ToString().Length;
 			string whiteSpace = string.Concat(Enumerable.Repeat(" ", whiteSpaceLength));
 			string lineSpace = string.Concat(Enumerable.Repeat("-", whiteSpaceLength)) + "-";
 			string output = whiteSpace + "  ";
@@ -297,7 +293,7 @@ namespace KillerSudokuSolver
 			string numberLine = ""; //The lines displaying the Grid coordinates
 
 			//Builds the lines displaying the Grid coordinates
-			for (int i = 1; i <= maxValue; i++)
+			for (int i = 1; i <= maxCellValue; i++)
 			{
 				numberLine += " " + i;
 
@@ -312,10 +308,10 @@ namespace KillerSudokuSolver
 			string lineLine = ""; //The lines above and below the Grid
 			string intermediateLineLine = ""; //The lines between Blocks
 
-			int stopper = maxValue - 1; //Makes sure the lines between Blocks don't run on too far
+			int stopper = maxCellValue - 1; //Makes sure the lines between Blocks don't run on too far
 
 			//Builds the lines above, below and between Blocks
-			for (int i = 0; i < maxValue; i++)
+			for (int i = 0; i < maxCellValue; i++)
 			{
 				lineLine += lineSpace;
 
@@ -334,7 +330,7 @@ namespace KillerSudokuSolver
 			output += lineLine + "\\" + Environment.NewLine;
 
 			//Builds the lines 
-			for (int y = maxValue - 1; y >= 0; y--)
+			for (int y = maxCellValue - 1; y >= 0; y--)
 			{
 				output += rows[y];
 

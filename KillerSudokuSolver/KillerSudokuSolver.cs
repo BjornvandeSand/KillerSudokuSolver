@@ -14,7 +14,7 @@ namespace KillerSudokuSolver
 			Console.WriteLine("Puzzle loaded");
 
 			puzzle.Verify();
-			Console.WriteLine("Puzzle verified");
+			Console.WriteLine("Puzzle verified" + Environment.NewLine);
 
 			puzzle.Solve();
 
@@ -26,26 +26,38 @@ namespace KillerSudokuSolver
 			}
 			else
 			{
-				Console.WriteLine(Environment.NewLine + "Puzzle unsolved, but no more improving rules found.");
+				Console.WriteLine(Environment.NewLine + "Puzzle unsolved, but no more improving rules found." + Environment.NewLine);
 			}
 
-			int valuesLeftToElimate = 0;
+			int valuesLeft = 0;
 			Console.WriteLine("Possible values left:");
 
 			foreach (Cell cell in puzzle.grid)
 			{
 				Console.Write("Cell[" + (cell.Column.Id + 1) + "," + (cell.Row.Id + 1) + "] ");
 
-				foreach (int i in cell.PossibleValues)
+				for(int i = 1; i <= cell.Row.Cells.Length; i++ )
 				{
-					valuesLeftToElimate++;
-					Console.Write(i + " ");
+					if (cell.PossibleValues.Contains(i))
+					{
+						valuesLeft++;
+						Console.Write(i + " ");
+					}
+					else
+					{
+						Console.Write("  ");
+					}
 				}
 
 				Console.WriteLine();
 			}
 
-			Console.WriteLine("There are " + valuesLeftToElimate + " values left to eliminate.");
+			int numberOfValues = puzzle.numberOfCells * puzzle.maxCellValue;
+			float valuesElimated = numberOfValues - valuesLeft;
+
+			Console.WriteLine(Environment.NewLine + valuesElimated + " possible values were elimated.");
+			Console.WriteLine(valuesLeft + " possible values are left to eliminate.");
+			Console.WriteLine(valuesElimated / numberOfValues  * 100 + "% solved.");
 
 			Console.Read();
 
@@ -84,6 +96,7 @@ namespace KillerSudokuSolver
 
 					int dimension = int.Parse(splitLine[0]);
 					int maxValue = dimension * dimension;
+					int numberOfCells = maxValue * maxValue;
 					int extremeSum = maxValue + 1; //The value of the lowest and highest possible Values combined
 
 					Cell[,] grid = new Cell[maxValue, maxValue];
@@ -142,13 +155,13 @@ namespace KillerSudokuSolver
 						Console.WriteLine("The parsed file contains more than the stated " + cagesAmount + " cages.");
 					}
 
-					if (cellCounter != maxValue * maxValue)
+					if (cellCounter != numberOfCells)
 					{
 						Console.WriteLine("The amount of Cells in the parsed file doesn't match the required amount: " + cellCounter);
 					}
 
 					//Build the Killer Sudoku based on the parsed input
-					output = new KillerSudoku(grid, dimension, maxValue, cages, killerX, extremeSum);
+					output = new KillerSudoku(grid, dimension, maxValue, cages, killerX, numberOfCells, extremeSum);
 				}
 			}
 			catch (Exception e)

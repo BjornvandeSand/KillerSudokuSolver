@@ -11,8 +11,8 @@ namespace KillerSudokuSolver
             Priority = priority;
         }
 
-        public override List<Cell> Execute() {
-			List<Cell> changedCells = new List<Cell>();
+        public override HashSet<Cell> Execute() {
+			HashSet<Cell> changedCells = new HashSet<Cell>();
 
 			Cell target = Target as Cell;
 
@@ -20,7 +20,7 @@ namespace KillerSudokuSolver
 			{
 				foreach (House house in target.Houses)
 				{
-					changedCells.AddRange(house.RemovePossibleValue(target.Value));
+					changedCells.UnionWith(house.RemovePossibleValue(target.Value));
 				}
 			}
 

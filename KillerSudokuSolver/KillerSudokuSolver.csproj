@@ -67,6 +67,7 @@
     <Compile Include="House.cs" />
     <Compile Include="Block.cs" />
     <Compile Include="KillerSudokuSolver.cs" />
+    <Compile Include="PriorityQueue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoveDuplicatePossibilities.cs" />
     <Compile Include="OnlyPossibilityLeftInHouse.cs" />
