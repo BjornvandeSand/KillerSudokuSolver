@@ -11,7 +11,8 @@ namespace KillerSudokuSolver
         }
 
 		//Checks if a possible value is found in only 1 Cell in a House
-        public override HashSet<Cell> Execute() {
+        public override HashSet<Cell> Execute()
+		{
 			SortedSet<int> possibleValues = Target.PossibleValues(); //Gathers all the values possible in this House
 			HashSet<Cell> changedCells = new HashSet<Cell>(); //Contains all the Cells changed by this Rule application
 

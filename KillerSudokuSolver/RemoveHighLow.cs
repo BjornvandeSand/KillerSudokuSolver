@@ -12,7 +12,8 @@ namespace KillerSudokuSolver
             Priority = priority;
         }
 
-        public override HashSet<Cell> Execute() {
+        public override HashSet<Cell> Execute()
+		{
 			Cage Target = this.Target as Cage;
 			Target = Target.GenerateSuccessor();
 

@@ -5,7 +5,7 @@ namespace KillerSudokuSolver
     class Cage : House
     {
         readonly char operation;
-		public int Goal { get; }
+		public readonly int Goal;
 
 		public Cage(int id, Cell[] cells, int goal, char operation)
 		{

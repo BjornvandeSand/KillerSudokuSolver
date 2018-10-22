@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace KillerSudokuSolver
 {
@@ -16,7 +18,7 @@ namespace KillerSudokuSolver
 			puzzle.Verify();
 			Console.WriteLine("Puzzle verified" + Environment.NewLine);
 
-			puzzle.Solve();
+			Solve(puzzle);
 
 			Console.WriteLine(Environment.NewLine + "Name: " + Path.GetFileNameWithoutExtension(path) + Environment.NewLine + Environment.NewLine + puzzle + Environment.NewLine);
 
@@ -59,14 +61,11 @@ namespace KillerSudokuSolver
 			Console.WriteLine(valuesLeft + " possible values are left to eliminate.");
 			Console.WriteLine(valuesElimated / numberOfValues  * 100 + "% solved.");
 
-			Console.Read();
-
 			//TESTLINES
 
 
 
 			//END TESTLINES
-
 			Console.Read();
 		}
 
@@ -170,6 +169,50 @@ namespace KillerSudokuSolver
 			}
 
 			return output;
+		}
+
+		//Solves this puzzle through a Priority Queue and several possible steps
+		static void Solve(KillerSudoku puzzle)
+		{
+			PriorityQueue<Rule> rulesQueue = new PriorityQueue<Rule>();
+			HashSet<Cell> improvedCells = new HashSet<Cell>();
+			HashSet<Cage> improvedCages = new HashSet<Cage>();
+
+			foreach (Cage cage in puzzle.cages)
+			{
+				//rulesQueue.Enqueue(new RemoveHighLow(cage, 0));
+				rulesQueue.Enqueue(new RemoveImpossibles(cage, 0));
+				break;
+			}
+
+			int rulesEvaluated = 0;
+
+			while (rulesQueue.Count() != 0)
+			{
+				rulesEvaluated++;
+				improvedCages.Clear();
+				improvedCells = rulesQueue.Dequeue().Execute();
+
+				foreach (Cell cell in improvedCells)
+				{
+					//rulesQueue.Enqueue(new RemoveDuplicatePossibilities(cell, 1));
+
+					foreach (House house in cell.Houses)
+					{
+						if (house is Cage)
+						{
+							if (improvedCages.Add(cell.Cage))
+							{
+								//rulesQueue.Enqueue(new RemoveHighLow(cell.Cage, 0));
+							}
+						}
+
+						//rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
+					}
+				}
+			}
+
+			Console.WriteLine(rulesEvaluated + " rules were evaluated.");
 		}
 	}
 }

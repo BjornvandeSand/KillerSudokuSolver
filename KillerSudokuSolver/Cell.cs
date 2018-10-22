@@ -7,17 +7,17 @@ namespace KillerSudokuSolver
     {
 		public int Value { get; set; } //The final Value for this Cell
 
-        public Cage Cage { get; set; }
-
-        public Block Block { get; set; }
-
         public Column Column { get; set; }
 
         public Row Row { get; set; }
 
         public Diagonal Diagonal { get; set; }
 
-        public List<House> Houses { get; set; }
+		public Block Block { get; set; }
+
+		public Cage Cage { get; set; }
+
+		public List<House> Houses { get; set; }
 
 		public new SortedSet<int> PossibleValues { get; set; }
 

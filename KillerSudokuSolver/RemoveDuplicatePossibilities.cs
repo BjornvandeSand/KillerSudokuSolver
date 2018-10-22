@@ -11,7 +11,8 @@ namespace KillerSudokuSolver
             Priority = priority;
         }
 
-        public override HashSet<Cell> Execute() {
+        public override HashSet<Cell> Execute()
+		{
 			HashSet<Cell> changedCells = new HashSet<Cell>();
 
 			Cell target = Target as Cell;

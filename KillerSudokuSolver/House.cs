@@ -5,6 +5,7 @@ namespace KillerSudokuSolver
     abstract class House
     {
         public Cell[] Cells { get; set; }
+
         public int Id { get;  set; }
 
 		public SortedSet<int> PossibleValues()

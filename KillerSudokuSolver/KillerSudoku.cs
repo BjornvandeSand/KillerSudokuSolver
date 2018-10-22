@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace KillerSudokuSolver
@@ -16,8 +15,8 @@ namespace KillerSudokuSolver
 		readonly public Column[] columns;
 		readonly Diagonal[] diagonals;
 		readonly Block[,] blocks;
+		readonly public Cage[] cages;
 		readonly House[] houses;
-		readonly Cage[] cages;
 
 		//The constructor not only builds the KillerSudoko itself, but initializes and interconnects all its components
 		public KillerSudoku(Cell[,] grid, int dimension, int maxCellValue, Cage[] cages, bool killerX, int numberOfCells, int extremeSum)
@@ -223,48 +222,6 @@ namespace KillerSudokuSolver
 					Console.WriteLine("There is a House too large for Dimension");
 				}
 			}
-		}
-
-		//Solves this puzzle through a Priority Queue and several possible steps
-		public void Solve()
-		{
-			PriorityQueue<Rule> rulesQueue = new PriorityQueue<Rule>();
-			HashSet<Cell> improvedCells = new HashSet<Cell>();
-			HashSet<Cage> improvedCages = new HashSet<Cage>();
-
-			foreach (Cage cage in cages)
-			{
-				rulesQueue.Enqueue(new RemoveHighLow(cage, 0));
-			}
-
-			int rulesEvaluated = 0;
-
-			while (rulesQueue.Count() != 0)
-			{
-				rulesEvaluated++;
-				improvedCages.Clear();
-				improvedCells = rulesQueue.Dequeue().Execute();
-
-				foreach (Cell cell in improvedCells)
-				{
-					rulesQueue.Enqueue(new RemoveDuplicatePossibilities(cell, 1));
-
-					foreach (House house in cell.Houses)
-					{
-						if (house is Cage)
-						{
-							if (improvedCages.Add(cell.Cage))
-							{
-								rulesQueue.Enqueue(new RemoveHighLow(cell.Cage, 0));
-							}
-						}
-
-						rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
-					}
-				}
-			}
-
-			Console.WriteLine(rulesEvaluated + " rules were evaluated.");
 		}
 
 		public bool Solved()
