@@ -180,9 +180,7 @@ namespace KillerSudokuSolver
 
 			foreach (Cage cage in puzzle.cages)
 			{
-				//rulesQueue.Enqueue(new RemoveHighLow(cage, 0));
-				rulesQueue.Enqueue(new RemoveImpossibles(cage, 0));
-				break;
+				rulesQueue.Enqueue(new RemoveHighLow(cage, 0));
 			}
 
 			int rulesEvaluated = 0;
@@ -195,7 +193,7 @@ namespace KillerSudokuSolver
 
 				foreach (Cell cell in improvedCells)
 				{
-					//rulesQueue.Enqueue(new RemoveDuplicatePossibilities(cell, 1));
+					rulesQueue.Enqueue(new RemoveDuplicatePossibilities(cell, 1));
 
 					foreach (House house in cell.Houses)
 					{
@@ -203,11 +201,12 @@ namespace KillerSudokuSolver
 						{
 							if (improvedCages.Add(cell.Cage))
 							{
-								//rulesQueue.Enqueue(new RemoveHighLow(cell.Cage, 0));
+								rulesQueue.Enqueue(new RemoveHighLow(cell.Cage, 0));
 							}
 						}
 
-						//rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
+						rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
+						rulesQueue.Enqueue(new RemoveImpossibles(house, -1));
 					}
 				}
 			}

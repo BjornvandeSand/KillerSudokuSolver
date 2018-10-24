@@ -48,11 +48,24 @@ namespace KillerSudokuSolver
 
 			if (PossibleValues.Contains(i))
 			{
-				PossibleValues.Remove(i);
 				change = true;
+				PossibleValues.Remove(i);
+				EvaluatePossibleValues();
 			}
 
-			EvaluatePossibleValues();
+			return change;
+		}
+
+		public bool SwapPossibleValues(SortedSet<int> possibleValues)
+		{
+			bool change = false;
+
+			if (!PossibleValues.SetEquals(possibleValues))
+			{
+				change = true;
+				PossibleValues = possibleValues;
+				EvaluatePossibleValues();
+			}
 
 			return change;
 		}
