@@ -4,25 +4,24 @@ namespace KillerSudokuSolver
 {
     class Cage : House
     {
-        readonly char operation;
-		public readonly int Goal;
+		public int Goal;
 
 		public Cage(int id, Cell[] cells, int goal, char operation)
 		{
 			Id = id;
 			Cells = cells;
 			Goal = goal;
-			this.operation = operation;
+			Operation = operation;
 		}
 
-		public Cage GenerateSuccessor()
+		public override House GenerateSuccessor()
 		{
 			int updatedGoal = Goal;
 			List<Cell> incompleteCells = new List<Cell>(Cells.Length);
 
-			foreach(Cell cell in Cells)
+			foreach (Cell cell in Cells)
 			{
-				if(cell.Value != 0)
+				if (cell.Value != 0)
 				{
 					updatedGoal -= cell.Value;
 				}
@@ -33,7 +32,7 @@ namespace KillerSudokuSolver
 				}
 			}
 
-			return new Cage(Id,incompleteCells.ToArray(),updatedGoal, operation);
+			return new Cage(Id, incompleteCells.ToArray(), updatedGoal, Operation);
 		}
-    }
+	}
 }

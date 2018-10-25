@@ -75,5 +75,10 @@ namespace KillerSudokuSolver
         {
             return Value.ToString();
         }
-    }
+
+		public override House GenerateSuccessor()
+		{
+			return this;
+		}
+	}
 }

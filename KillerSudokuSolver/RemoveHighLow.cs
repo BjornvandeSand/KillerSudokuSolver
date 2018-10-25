@@ -14,37 +14,36 @@ namespace KillerSudokuSolver
 
         public override HashSet<Cell> Execute()
 		{
-			Cage Target = this.Target as Cage;
-			Target = Target.GenerateSuccessor();
+			Cage target = (Cage) Target.GenerateSuccessor();
 
 			HashSet<Cell> changedCells = new HashSet<Cell>();
 
 			int tempSum = 0; //Accumulator for values as we approach the Goal
 
-			SortedSet<int> possibleValues = Target.PossibleValues();
+			SortedSet<int> possibleValues = target.PossibleValues();
 
-			for (int i = 0; i < Target.Cells.Length - 1; i++)
+			for (int i = 0; i < target.Cells.Length - 1; i++)
 			{
 				tempSum += possibleValues.ElementAt(i);
 			}
 
-			int max = Target.Goal - tempSum;
+			int max = target.Goal - tempSum;
 
 			tempSum = 0;
 
-			for (int i = possibleValues.Count - 1; i > possibleValues.Count - Target.Cells.Length; i--)
+			for (int i = possibleValues.Count - 1; i > possibleValues.Count - target.Cells.Length; i--)
 			{
 				tempSum += possibleValues.ElementAt(i);
 			}
 
-			int min = Target.Goal - tempSum;
+			int min = target.Goal - tempSum;
 
-			foreach (Cell cell in Target.Cells)
+			foreach (Cell cell in target.Cells)
             {
                 //This part removes possible Values that are are too high
-                if (max < Target.Cells[0].Block.Cells.Length) //Determines if there's any possible Values low enough to cull
+                if (max < target.Cells[0].Block.Cells.Length) //Determines if there's any possible Values low enough to cull
                 {
-                    for (int i = max + 1; i <= Target.Cells[0].Block.Cells.Length; i++)
+                    for (int i = max + 1; i <= target.Cells[0].Block.Cells.Length; i++)
                     {
 						//Check if this Value is still listed as possible for the Cell and remove it if so
 						if (cell.RemovePossibleValueIfPresent(i))

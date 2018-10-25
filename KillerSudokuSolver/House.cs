@@ -8,6 +8,8 @@ namespace KillerSudokuSolver
 
         public int Id { get;  set; }
 
+		public char Operation;
+
 		public SortedSet<int> PossibleValues()
 		{
 			SortedSet<int> output = new SortedSet<int>();
@@ -34,5 +36,7 @@ namespace KillerSudokuSolver
 
 			return output;
 		}
+
+		public abstract House GenerateSuccessor();
 	}
 }

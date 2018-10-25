@@ -18,30 +18,26 @@ namespace KillerSudokuSolver
 
 		public override HashSet<Cell> Execute()
 		{
-			if (Target is Cage)
-			{
-				Cage CastTarget = Target as Cage;
-				Target = CastTarget.GenerateSuccessor();
-			}
+			Successor = Target.GenerateSuccessor();
 
-			AllHousePossibleValues = new SortedSet<int>[Target.Cells.Length];
+			AllHousePossibleValues = new SortedSet<int>[Successor.Cells.Length];
 
-			for (int i = 0; i < Target.Cells.Length; i++)
+			for (int i = 0; i < Successor.Cells.Length; i++)
 			{
 				AllHousePossibleValues[i] = new SortedSet<int>();
 			}
 
-			int[] possibilities = new int[Target.Cells.Length];
+			int[] possibilities = new int[Successor.Cells.Length];
 
 			HashSet<Cell> changedCells = new HashSet<Cell>();
 
 			Recursion(possibilities, 0);
 
-			for (int i = 0; i < Target.Cells.Length; i++)
+			for (int i = 0; i < Successor.Cells.Length; i++)
 			{
-				if (Target.Cells[i].SwapPossibleValues(AllHousePossibleValues[i]))
+				if (Successor.Cells[i].SwapPossibleValues(AllHousePossibleValues[i]))
 				{
-					changedCells.Add(Target.Cells[i]);
+					changedCells.Add(Successor.Cells[i]);
 				}
 			}
 
@@ -50,9 +46,9 @@ namespace KillerSudokuSolver
 
 		public void Recursion(int[] gatheredValues, int progress)
 		{
-			if (progress == Target.Cells.Length) //We've arrived at the end
+			if (progress == Successor.Cells.Length) //We've arrived at the end
 			{
-				if (Target is Cage)
+				if (Successor is Cage)
 				{
 					int counter = 0;
 
@@ -61,7 +57,7 @@ namespace KillerSudokuSolver
 						counter += j;
 					}
 
-					Cage CastTarget = Target as Cage;
+					Cage CastTarget = Successor as Cage;
 
 					if (counter != CastTarget.Goal)
 					{
@@ -79,12 +75,12 @@ namespace KillerSudokuSolver
 				int[] possibilitiesCopy;
 
 				//Start new branches with a copy of the progress for each Possible Value that wasn't included yet
-				foreach (int i in Target.Cells[progress].PossibleValues)
+				foreach (int i in Successor.Cells[progress].PossibleValues)
 				{
 					if (!gatheredValues.Contains(i)) //Check if the new Possible Value isn't already used in the progress so far
 					{
-						possibilitiesCopy = new int[Target.Cells.Length];
-						Array.Copy(gatheredValues, possibilitiesCopy, Target.Cells.Length); //Copy the progress so far
+						possibilitiesCopy = new int[Successor.Cells.Length];
+						Array.Copy(gatheredValues, possibilitiesCopy, Successor.Cells.Length); //Copy the progress so far
 						possibilitiesCopy[progress] = i; //Add the PossibleValue for the latest Cell
 						Recursion(possibilitiesCopy, progress + 1); //Run the branch
 					}

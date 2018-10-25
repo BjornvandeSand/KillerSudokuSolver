@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace KillerSudokuSolver
 {
 	class Block : House
@@ -12,5 +14,20 @@ namespace KillerSudokuSolver
 				Cells[i] = c[i];
 			}
 		}
-    }
+
+		public override House GenerateSuccessor()
+		{
+			List<Cell> incompleteCells = new List<Cell>(Cells.Length);
+
+			foreach (Cell cell in Cells)
+			{
+				if (cell.Value == 0)
+				{
+					incompleteCells.Add(cell);
+				}
+			}
+
+			return new Block(Id, incompleteCells.ToArray());
+		}
+	}
 }

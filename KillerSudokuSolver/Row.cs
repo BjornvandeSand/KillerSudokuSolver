@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace KillerSudokuSolver
@@ -36,5 +37,20 @@ namespace KillerSudokuSolver
 
             return output;
         }
-    }
+
+		public override House GenerateSuccessor()
+		{
+			List<Cell> incompleteCells = new List<Cell>(Cells.Length);
+
+			foreach (Cell cell in Cells)
+			{
+				if (cell.Value == 0)
+				{
+					incompleteCells.Add(cell);
+				}
+			}
+
+			return new Row(Id, incompleteCells.ToArray(), dimension);
+		}
+	}
 }
