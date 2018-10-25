@@ -48,10 +48,7 @@ namespace KillerSudokuSolver
 						//Check if this Value is still listed as possible for the Cell and remove it if so
 						if (cell.RemovePossibleValueIfPresent(i))
 						{
-                            if (!changedCells.Contains(cell)) //Check if this Cell isn't already listed as one that should be re-evaluated
-                            {
-								changedCells.Add(cell); //Add it to the list of upcoming evaluations
-                            }
+							changedCells.Add(cell); //Add it to the list of upcoming evaluations, it won't be added if the Cell is already in the HashSet
                         }
                     }
                 }

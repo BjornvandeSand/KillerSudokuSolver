@@ -50,8 +50,7 @@ namespace KillerSudokuSolver
 
 			Console.WriteLine("Which puzzle would you like to solve? Enter a number:");
 
-			int input2 = 0;
-			int.TryParse(Console.ReadLine(), out input2);
+			int input2 = int.Parse(Console.ReadLine());
 
 			Console.WriteLine(input2 + " selected." + Environment.NewLine);
 
@@ -69,7 +68,7 @@ namespace KillerSudokuSolver
 			
 			if (solved)
 			{
-				Console.WriteLine("Puzzle solved");
+				Console.WriteLine("Puzzle solved!");
 			}
 			else
 			{
@@ -218,6 +217,7 @@ namespace KillerSudokuSolver
 			PriorityQueue<Rule> rulesQueue = new PriorityQueue<Rule>();
 			HashSet<Cell> improvedCells = new HashSet<Cell>();
 			HashSet<Cage> improvedCages = new HashSet<Cage>();
+			HashSet<House> improvedHouses = new HashSet<House>();
 
 			foreach (Cage cage in puzzle.cages)
 			{
@@ -230,6 +230,7 @@ namespace KillerSudokuSolver
 			{
 				rulesEvaluated++;
 				improvedCages.Clear();
+				improvedHouses.Clear();
 				improvedCells = rulesQueue.Dequeue().Execute();
 
 				foreach (Cell cell in improvedCells)
@@ -238,16 +239,19 @@ namespace KillerSudokuSolver
 
 					foreach (House house in cell.Houses)
 					{
-						if (house is Cage)
+						if (improvedHouses.Add(house))
 						{
-							if (improvedCages.Add(cell.Cage))
+							rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
+							rulesQueue.Enqueue(new RemoveImpossibles(house, -1));
+
+							if (house is Cage)
 							{
-								rulesQueue.Enqueue(new RemoveHighLow(cell.Cage, 0));
+								if (improvedCages.Add(cell.Cage))
+								{
+									rulesQueue.Enqueue(new RemoveHighLow(cell.Cage, 0));
+								}
 							}
 						}
-
-						rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
-						rulesQueue.Enqueue(new RemoveImpossibles(house, -1));
 					}
 				}
 			}
