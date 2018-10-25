@@ -7,69 +7,111 @@ namespace KillerSudokuSolver
 	class KillerSudokuSolver
 	{
 		static void Main(string[] args)
-		{ 
-			Console.WriteLine("*Killer Sudoku solver*" + Environment.NewLine);
+		{
+			string path = "Puzzles/";
 
-			string path = "Puzzles/Warmup01.txt";
-			KillerSudoku puzzle = Parse(path);
+			Console.WriteLine("*Killer Sudoku solver*");
+			Console.WriteLine("Which category of puzzle would you like to solve?");
+			Console.WriteLine("Press the key associated with a difficulty to continue or any other key to quit:");
+			Console.WriteLine("(w)armup, (e)asy, (m)edium, (t)ricky or (d)ifficult? Alternatively (c)alcudoku.org");
+
+			ConsoleKeyInfo input = Console.ReadKey();	
+
+			string difficulty = "";
+
+			switch (input.KeyChar)
+			{
+				case 'w':
+					difficulty = "Warmup";
+					break;
+				case 'e':
+					difficulty = "Easy";
+					break;
+				case 'm':
+					difficulty = "Medium";
+					break;
+				case 't':
+					difficulty = "Tricky";
+					break;
+				case 'd':
+					difficulty = "Difficult";
+					break;
+				case 'c':
+					difficulty = "Calcudoku.org";
+					break;
+				default:
+					Console.WriteLine("Goodbye!");
+					Environment.Exit(0);
+					break;
+			}
+
+			path += difficulty + '/';
+			Console.WriteLine(Environment.NewLine + difficulty + " selected" + Environment.NewLine);
+
+			Console.WriteLine("Which puzzle would you like to solve? Enter a number:");
+
+			int input2 = 0;
+			int.TryParse(Console.ReadLine(), out input2);
+
+			Console.WriteLine(input2 + " selected." + Environment.NewLine);
+
+			path += input2 + ".txt";
+
+			KillerSudoku puzzle = Parser(path);
 			Console.WriteLine("Puzzle loaded");
 
 			puzzle.Verify();
 			Console.WriteLine("Puzzle verified" + Environment.NewLine);
 
-			Solve(puzzle);
+			bool solved = Solve(puzzle);
 
-			Console.WriteLine(Environment.NewLine + "Name: " + Path.GetFileNameWithoutExtension(path) + Environment.NewLine + Environment.NewLine + puzzle + Environment.NewLine);
-
-			if (puzzle.Solved())
+			Console.WriteLine(Environment.NewLine + puzzle + Environment.NewLine);
+			
+			if (solved)
 			{
 				Console.WriteLine("Puzzle solved");
 			}
 			else
 			{
-				Console.WriteLine(Environment.NewLine + "Puzzle unsolved, but no more improving rules found." + Environment.NewLine);
-			}
+				Console.WriteLine("Puzzle unsolved, but no more improving rules found." + Environment.NewLine);
 
-			int valuesLeft = 0;
-			Console.WriteLine("Possible values left:");
+				int valuesLeft = 0;
+				Console.WriteLine("Possible values left:");
 
-			foreach (Cell cell in puzzle.grid)
-			{
-				Console.Write("Cell[" + (cell.Column.Id + 1) + "," + (cell.Row.Id + 1) + "] ");
-
-				for(int i = 1; i <= cell.Row.Cells.Length; i++ )
+				foreach (Cell cell in puzzle.grid)
 				{
-					if (cell.PossibleValues.Contains(i))
+					Console.Write("Cell[" + (cell.Column.Id + 1) + "," + (cell.Row.Id + 1) + "] ");
+
+					for (int i = 1; i <= cell.Row.Cells.Length; i++)
 					{
-						valuesLeft++;
-						Console.Write(i + " ");
+						if (cell.PossibleValues.Contains(i))
+						{
+							valuesLeft++;
+							Console.Write(i + " ");
+						}
+						else
+						{
+							Console.Write("  ");
+						}
 					}
-					else
-					{
-						Console.Write("  ");
-					}
+
+					Console.WriteLine();
 				}
 
-				Console.WriteLine();
+				int numberOfValues = puzzle.numberOfCells * puzzle.maxCellValue;
+				float valuesEliminated = numberOfValues - valuesLeft;
+
+				Console.WriteLine(Environment.NewLine + valuesEliminated + " possible values were elimated.");
+				Console.WriteLine(valuesLeft + " possible values are left to eliminate.");
+				Console.WriteLine(valuesEliminated / numberOfValues * 100 + "% solved.");
 			}
 
-			int numberOfValues = puzzle.numberOfCells * puzzle.maxCellValue;
-			float valuesElimated = numberOfValues - valuesLeft;
-
-			Console.WriteLine(Environment.NewLine + valuesElimated + " possible values were elimated.");
-			Console.WriteLine(valuesLeft + " possible values are left to eliminate.");
-			Console.WriteLine(valuesElimated / numberOfValues  * 100 + "% solved.");
-
-			//TESTLINES
-
-
-
-			//END TESTLINES
+			Console.WriteLine(Environment.NewLine + "Press any key to exit.");
 			Console.Read();
 		}
 
 		//Parses all the required info to build a Killer Sudoku and hands it to the constructor
-		static KillerSudoku Parse(string file)
+		static KillerSudoku Parser(string file)
 		{
 			KillerSudoku output = null;
 
@@ -171,7 +213,7 @@ namespace KillerSudokuSolver
 		}
 
 		//Solves this puzzle through a Priority Queue and several possible steps
-		static void Solve(KillerSudoku puzzle)
+		static bool Solve(KillerSudoku puzzle)
 		{
 			PriorityQueue<Rule> rulesQueue = new PriorityQueue<Rule>();
 			HashSet<Cell> improvedCells = new HashSet<Cell>();
@@ -211,6 +253,8 @@ namespace KillerSudokuSolver
 			}
 
 			Console.WriteLine(rulesEvaluated + " rules were evaluated.");
+
+			return puzzle.Solved();
 		}
 	}
 }
