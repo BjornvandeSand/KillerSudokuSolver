@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace KillerSudokuSolver
 {
+	/*
+	 * Class written by	James McCaffrey
+	 * https://visualstudiomagazine.com/articles/2012/11/01/priority-queues-with-c.aspx
+	 * Only superficially edited by myself
+	 */
 	public class PriorityQueue<T> where T : IComparable<T>
 	{
 		private List<T> data;
