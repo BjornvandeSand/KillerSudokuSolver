@@ -117,8 +117,8 @@ namespace KillerSudokuSolver
 		{
 			KillerSudoku output = null;
 
-			//try
-			//{
+			try
+			{
 				using (StreamReader sr = new StreamReader(file))
 				{
 					const int housesPerCell = 4; //The amount of Houses each Cell is a part of. This is static, except for Diagonals
@@ -205,11 +205,11 @@ namespace KillerSudokuSolver
 					//Build the Killer Sudoku based on the parsed input
 					output = new KillerSudoku(grid, dimension, maxValue, cages, killerX, numberOfCells, extremeSum);
 				}
-			//}
-			//catch (Exception e)
-			//{
-			//	Console.WriteLine("There was a problem in the attempt to parse the KillerSudoku file:" + Environment.NewLine + e.Message);
-			//}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine("There was a problem in the attempt to parse the KillerSudoku file:" + Environment.NewLine + e.Message);
+			}
 
 			return output;
 		}
@@ -221,6 +221,7 @@ namespace KillerSudokuSolver
 			HashSet<Cell> improvedCells = new HashSet<Cell>();
 			HashSet<Cage> improvedCages = new HashSet<Cage>();
 			HashSet<House> improvedHouses = new HashSet<House>();
+			HashSet<Rule> queuedRules = new HashSet<Rule>();
 
 			foreach (Cage cage in puzzle.cages)
 			{

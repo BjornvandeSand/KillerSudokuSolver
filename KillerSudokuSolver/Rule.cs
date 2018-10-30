@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace KillerSudokuSolver
 {
-    abstract class Rule : IComparable<Rule>
-    {
-        public House Target { get; set; }
+	abstract class Rule : IComparable<Rule>
+	{
+		public House Target { get; set; }
 		public House Successor { get; set; }
 
 		public float Priority { get; set; }
 
-        //Executes the Step this object contains on the House it contains and returns a list of affected Cells
-        public abstract HashSet<Cell> Execute();
+		//Executes the Step this object contains on the House it contains and returns a list of affected Cells
+		public abstract HashSet<Cell> Execute();
 
 		public int CompareTo(Rule other)
 		{
@@ -30,5 +30,7 @@ namespace KillerSudokuSolver
 				return 1;
 			}
 		}
+
+		public abstract override int GetHashCode();
 	}
 }

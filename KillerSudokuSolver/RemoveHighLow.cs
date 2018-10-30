@@ -72,5 +72,10 @@ namespace KillerSudokuSolver
 
 			return changedCells; //Return the list of upcoming Cells to evaluate
         }
-    }
+
+		public override int GetHashCode()
+		{
+			return 0;
+		}
+	}
 }
