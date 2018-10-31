@@ -20,14 +20,15 @@ namespace KillerSudokuSolver
 
 			int tempSum = 0; //Accumulator for values as we approach the Goal
 
-			SortedSet<int> possibleValues = target.PossibleValues();
+			SortedSet<int> possibleValues = target.PossibleValues(); //Get a set of all Possible Values in this Cage
 
+			//Sum up lowest Possible Values until there's only one Cell left in the Cage
 			for (int i = 0; i < target.Cells.Length - 1; i++)
 			{
 				tempSum += possibleValues.ElementAt(i);
 			}
 
-			int max = target.Goal - tempSum;
+			int max = target.Goal - tempSum; //Represent the largest number still consistent for this Cage.
 
 			tempSum = 0;
 

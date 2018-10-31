@@ -14,10 +14,7 @@ namespace KillerSudokuSolver
         public override HashSet<Cell> Execute()
 		{
 			SortedSet<int> possibleValues = Target.PossibleValues(); //Gathers all the values possible in this House
-			HashSet<Cell> changedCells = new HashSet<Cell>(); //Contains all the Cells changed by this Rule application
-
-			int valueCounter; //Keeps track of how many times the current possible Value is found
-			Cell cellTracker; // Keeps track of the last Cell found to allow the possible Value
+			HashSet<Cell> changedCells = new HashSet<Cell>(); //All the Cells changed by this Rule application
 
 			//This rule is only correct for non-Cage Houses and Cages where the remaining possible Values are all certain to exist in the Cage
 			if (!(Target is Cage) || possibleValues.Count == Target.Cells.Length)
@@ -25,8 +22,8 @@ namespace KillerSudokuSolver
 				//Goes through all the possible Values
 				foreach (int i in possibleValues)
 				{
-					valueCounter = 0;
-					cellTracker = null;
+					int valueCounter = 0; //How many times the current possible Value is found
+					Cell cellTracker = null; //Last Cell found to allow the possible Value
 
 					//Goes through all the Cells in this House
 					foreach (Cell cell in Target.Cells)
