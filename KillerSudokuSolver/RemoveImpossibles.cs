@@ -87,10 +87,5 @@ namespace KillerSudokuSolver
 				}
 			}
 		}
-
-		public override int GetHashCode()
-		{
-			return 0;
-		}
 	}
 }

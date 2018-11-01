@@ -26,3 +26,17 @@ C:\Users\Sage\Source\Repos\BjornvandeSand\KillerSudokuSolver\KillerSudokuSolver\
 C:\Users\Sage\Source\Repos\BjornvandeSand\KillerSudokuSolver\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.csproj.CoreCompileInputs.cache
 C:\Users\Sage\Source\Repos\BjornvandeSand\KillerSudokuSolver\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.exe
 C:\Users\Sage\Source\Repos\BjornvandeSand\KillerSudokuSolver\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.pdb
+C:\Users\Sage\Downloads\KillerSudokuSolver-a81129e8ac9a9fa126d1b737b6edb3e873665f9c\KillerSudokuSolver\bin\Debug\KillerSudokuSolver.exe.config
+C:\Users\Sage\Downloads\KillerSudokuSolver-a81129e8ac9a9fa126d1b737b6edb3e873665f9c\KillerSudokuSolver\bin\Debug\KillerSudokuSolver.exe
+C:\Users\Sage\Downloads\KillerSudokuSolver-a81129e8ac9a9fa126d1b737b6edb3e873665f9c\KillerSudokuSolver\bin\Debug\KillerSudokuSolver.pdb
+C:\Users\Sage\Downloads\KillerSudokuSolver-a81129e8ac9a9fa126d1b737b6edb3e873665f9c\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.csprojAssemblyReference.cache
+C:\Users\Sage\Downloads\KillerSudokuSolver-a81129e8ac9a9fa126d1b737b6edb3e873665f9c\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.csproj.CoreCompileInputs.cache
+C:\Users\Sage\Downloads\KillerSudokuSolver-a81129e8ac9a9fa126d1b737b6edb3e873665f9c\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.exe
+C:\Users\Sage\Downloads\KillerSudokuSolver-a81129e8ac9a9fa126d1b737b6edb3e873665f9c\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.pdb
+C:\Users\Sage\Downloads\WORKS\KillerSudokuSolver\bin\Debug\KillerSudokuSolver.exe.config
+C:\Users\Sage\Downloads\WORKS\KillerSudokuSolver\bin\Debug\KillerSudokuSolver.exe
+C:\Users\Sage\Downloads\WORKS\KillerSudokuSolver\bin\Debug\KillerSudokuSolver.pdb
+C:\Users\Sage\Downloads\WORKS\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.csprojAssemblyReference.cache
+C:\Users\Sage\Downloads\WORKS\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.csproj.CoreCompileInputs.cache
+C:\Users\Sage\Downloads\WORKS\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.exe
+C:\Users\Sage\Downloads\WORKS\KillerSudokuSolver\obj\Debug\KillerSudokuSolver.pdb

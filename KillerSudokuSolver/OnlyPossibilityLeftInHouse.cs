@@ -13,17 +13,22 @@ namespace KillerSudokuSolver
 		//Checks if a possible value is found in only 1 Cell in a House
         public override HashSet<Cell> Execute()
 		{
+			Target = Target.GenerateSuccessor();
+
 			SortedSet<int> possibleValues = Target.PossibleValues(); //Gathers all the values possible in this House
-			HashSet<Cell> changedCells = new HashSet<Cell>(); //All the Cells changed by this Rule application
+			HashSet<Cell> changedCells = new HashSet<Cell>(); //Contains all the Cells changed by this Rule application
+
+			int valueCounter; //Keeps track of how many times the current possible Value is found
+			Cell cellTracker; // Keeps track of the last Cell found to allow the possible Value
 
 			//This rule is only correct for non-Cage Houses and Cages where the remaining possible Values are all certain to exist in the Cage
-			if (!(Target is Cage) || possibleValues.Count == Target.Cells.Length)
+			if (!(Target is Cage) || Target.AllPossibleValuesKnown())
 			{
 				//Goes through all the possible Values
 				foreach (int i in possibleValues)
 				{
-					int valueCounter = 0; //How many times the current possible Value is found
-					Cell cellTracker = null; //Last Cell found to allow the possible Value
+					valueCounter = 0;
+					cellTracker = null;
 
 					//Goes through all the Cells in this House
 					foreach (Cell cell in Target.Cells)
@@ -55,10 +60,5 @@ namespace KillerSudokuSolver
 
 			return changedCells; //Return the list of changed Cells to evaluate
         }
-
-		public override int GetHashCode()
-		{
-			return 0;
-		}
-	}
+    }
 }

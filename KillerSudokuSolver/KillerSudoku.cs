@@ -176,9 +176,9 @@ namespace KillerSudokuSolver
 			//Collect all of each Cell's Houses in their House list
 			foreach (Cell cell in grid)
 			{
+				cell.Houses.Add(cell.Cage);
 				cell.Houses.Add(cell.Row);
 				cell.Houses.Add(cell.Column);
-				cell.Houses.Add(cell.Cage);
 				cell.Houses.Add(cell.Block);
 
 				if (cell.Diagonal != null)

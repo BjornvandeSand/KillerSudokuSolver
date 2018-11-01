@@ -37,6 +37,11 @@ namespace KillerSudokuSolver
 			return output;
 		}
 
+		public bool AllPossibleValuesKnown()
+		{
+			return PossibleValues().Count == Cells.Length;
+		}
+
 		public abstract House GenerateSuccessor();
 	}
 }

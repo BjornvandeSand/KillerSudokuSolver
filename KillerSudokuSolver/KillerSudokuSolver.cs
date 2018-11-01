@@ -8,17 +8,17 @@ namespace KillerSudokuSolver
 	{
 		static void Main(string[] args)
 		{
-			Console.WriteLine("*Killer Sudoku solver*");
-
-			while(true)
+			while (true)
 			{
+				string path = "Puzzles/";
+
+				Console.WriteLine("*Killer Sudoku solver*");
 				Console.WriteLine("Which category of puzzle would you like to solve?");
 				Console.WriteLine("Press the key associated with a difficulty to continue or any other key to quit:");
 				Console.WriteLine("(w)armup, (e)asy, (m)edium, (t)ricky or (d)ifficult? Alternatively (c)alcudoku.org");
 
 				ConsoleKeyInfo input = Console.ReadKey();
 
-				string path = "Puzzles/";
 				string difficulty = "";
 
 				switch (input.KeyChar)
@@ -107,7 +107,7 @@ namespace KillerSudokuSolver
 					Console.WriteLine(valuesEliminated / numberOfValues * 100 + "% solved.");
 				}
 
-				Console.WriteLine(Environment.NewLine + "Press Enter to restart.");
+				Console.WriteLine(Environment.NewLine + "Press any key to return the menu.");
 				Console.ReadLine();
 			}
 		}
@@ -220,8 +220,6 @@ namespace KillerSudokuSolver
 			PriorityQueue<Rule> rulesQueue = new PriorityQueue<Rule>();
 			HashSet<Cell> improvedCells = new HashSet<Cell>();
 			HashSet<Cage> improvedCages = new HashSet<Cage>();
-			HashSet<House> improvedHouses = new HashSet<House>();
-			HashSet<Rule> queuedRules = new HashSet<Rule>();
 
 			foreach (Cage cage in puzzle.cages)
 			{
@@ -234,7 +232,6 @@ namespace KillerSudokuSolver
 			{
 				rulesEvaluated++;
 				improvedCages.Clear();
-				improvedHouses.Clear();
 				improvedCells = rulesQueue.Dequeue().Execute();
 
 				foreach (Cell cell in improvedCells)
@@ -243,24 +240,23 @@ namespace KillerSudokuSolver
 
 					foreach (House house in cell.Houses)
 					{
-						if (improvedHouses.Add(house))
+						if (house is Cage)
 						{
-							rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
-							rulesQueue.Enqueue(new RemoveImpossibles(house, -1));
-
-							if (house is Cage)
+							if (improvedCages.Add(cell.Cage))
 							{
-								if (improvedCages.Add(cell.Cage))
-								{
-									rulesQueue.Enqueue(new RemoveHighLow(cell.Cage, 0));
-								}
+								rulesQueue.Enqueue(new RemoveHighLow(cell.Cage, 0));
+								rulesQueue.Enqueue(new NCageN(cell.Cage, 0));
 							}
 						}
+
+						rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
+						rulesQueue.Enqueue(new RemoveImpossibles(house, -1));
 					}
 				}
 			}
 
 			Console.WriteLine(rulesEvaluated + " rules were evaluated.");
+
 
 			return puzzle.Solved();
 		}
