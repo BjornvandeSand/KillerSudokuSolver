@@ -4,7 +4,10 @@ namespace KillerSudokuSolver
 {
     class OnlyPossibilityLeftInHouse : Rule
     {
-        public OnlyPossibilityLeftInHouse(House target, float priority)
+		public static int PossibleValuesEliminated = 0;
+		public static int Executions = 0;
+
+		public OnlyPossibilityLeftInHouse(House target, float priority)
         {
             Target = target;
             Priority = priority;
@@ -13,6 +16,8 @@ namespace KillerSudokuSolver
 		//Checks if a possible value is found in only 1 Cell in a House
         public override HashSet<Cell> Execute()
 		{
+			Executions++;
+
 			Target = Target.GenerateSuccessor();
 
 			SortedSet<int> possibleValues = Target.PossibleValues(); //Gathers all the values possible in this House
@@ -49,7 +54,10 @@ namespace KillerSudokuSolver
 						{
 							if (j != i)
 							{
-								cellTracker.RemovePossibleValueIfPresent(j);
+								if (cellTracker.RemovePossibleValueIfPresent(j))
+								{
+									PossibleValuesEliminated++;
+								}
 							}
 						}
 

@@ -108,6 +108,7 @@ namespace KillerSudokuSolver
 				}
 
 				Console.WriteLine(Environment.NewLine + "Press any key to return the menu.");
+				Reset();
 				Console.ReadLine();
 			}
 		}
@@ -220,6 +221,7 @@ namespace KillerSudokuSolver
 			PriorityQueue<Rule> rulesQueue = new PriorityQueue<Rule>();
 			HashSet<Cell> improvedCells = new HashSet<Cell>();
 			HashSet<Cage> improvedCages = new HashSet<Cage>();
+			HashSet<House> improvedHouses = new HashSet<House>();
 
 			foreach (Cage cage in puzzle.cages)
 			{
@@ -232,6 +234,7 @@ namespace KillerSudokuSolver
 			{
 				rulesEvaluated++;
 				improvedCages.Clear();
+				improvedHouses.Clear();
 				improvedCells = rulesQueue.Dequeue().Execute();
 
 				foreach (Cell cell in improvedCells)
@@ -240,25 +243,62 @@ namespace KillerSudokuSolver
 
 					foreach (House house in cell.Houses)
 					{
-						if (house is Cage)
+						if (improvedHouses.Add(house))
 						{
-							if (improvedCages.Add(cell.Cage))
+							if (house is Cage)
 							{
-								rulesQueue.Enqueue(new RemoveHighLow(cell.Cage, 0));
-								rulesQueue.Enqueue(new NCageN(cell.Cage, 0));
+								if (improvedCages.Add(cell.Cage))
+								{
+									rulesQueue.Enqueue(new RemoveHighLow(cell.Cage, 0));
+									rulesQueue.Enqueue(new NCageN(cell.Cage, 0));
+								}
 							}
-						}
 
-						rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
-						rulesQueue.Enqueue(new RemoveImpossibles(house, -1));
+							rulesQueue.Enqueue(new OnlyPossibilityLeftInHouse(house, 0));
+							rulesQueue.Enqueue(new RemoveImpossibles(house, -1));
+						}
 					}
 				}
 			}
 
-			Console.WriteLine(rulesEvaluated + " rules were evaluated.");
+			int totalValuesEliminated = RemoveDuplicatePossibilities.PossibleValuesEliminated + 
+				RemoveHighLow.PossibleValuesEliminated + 
+				OnlyPossibilityLeftInHouse.PossibleValuesEliminated + 
+				NCageN.PossibleValuesEliminated +
+				RemoveImpossibles.PossibleValuesEliminated +
+				Cell.PossibleValuesEliminated;
 
+			Console.WriteLine("A total of " + rulesEvaluated + " rules were evaluated.");
+
+			Console.WriteLine(Environment.NewLine + "The following Rules were executed this number of times:");
+			Console.WriteLine(RemoveDuplicatePossibilities.Executions + " by RemoveDuplicatePossibilities Rules");
+			Console.WriteLine(RemoveHighLow.Executions + " by RemoveHighLow Rules");
+			Console.WriteLine(OnlyPossibilityLeftInHouse.Executions + " by OnlyPossibilityLeftInHouse Rules");
+			Console.WriteLine(NCageN.Executions + " by NCageN Rules");
+			Console.WriteLine(RemoveImpossibles.Executions + " by RemoveImpossibles Rules");
+
+			Console.WriteLine(Environment.NewLine + "The following Rules were responsible for this number of Possible Value eliminations:");
+			Console.WriteLine(RemoveDuplicatePossibilities.PossibleValuesEliminated + " by RemoveDuplicatePossibilities Rules");
+			Console.WriteLine(RemoveHighLow.PossibleValuesEliminated + " by RemoveHighLow Rules");
+			Console.WriteLine(OnlyPossibilityLeftInHouse.PossibleValuesEliminated + " by OnlyPossibilityLeftInHouse Rules");
+			Console.WriteLine(NCageN.PossibleValuesEliminated + " by NCageN Rules");
+			Console.WriteLine(RemoveImpossibles.PossibleValuesEliminated + " by RemoveImpossibles Rules");
+
+			Console.WriteLine(Environment.NewLine + Cell.PossibleValuesEliminated + " by " + Cell.PossibleValuesEliminated + " automatic removal of the last Possible Value in Cell calls");
+
+			Console.WriteLine("In total " + totalValuesEliminated + " Possible Values were eliminated.");
 
 			return puzzle.Solved();
+		}
+
+		static void Reset()
+		{
+			Cell.PossibleValuesEliminated = 0;
+			RemoveDuplicatePossibilities.PossibleValuesEliminated = 0;
+			RemoveHighLow.PossibleValuesEliminated = 0;
+			OnlyPossibilityLeftInHouse.PossibleValuesEliminated = 0;
+			NCageN.PossibleValuesEliminated = 0;
+			RemoveImpossibles.PossibleValuesEliminated = 0;
 		}
 	}
 }

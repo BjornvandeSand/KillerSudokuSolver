@@ -22,21 +22,6 @@ namespace KillerSudokuSolver
 			return output;
 		}
 
-		public List<Cell> RemovePossibleValue(int i)
-		{
-			List<Cell> output = new List<Cell>(Cells.Length);
-
-			foreach (Cell cell in Cells)
-			{
-				if (cell.RemovePossibleValueIfPresent(i))
-				{
-					output.Add(cell);
-				}
-			}
-
-			return output;
-		}
-
 		public bool AllPossibleValuesKnown()
 		{
 			return PossibleValues().Count == Cells.Length;

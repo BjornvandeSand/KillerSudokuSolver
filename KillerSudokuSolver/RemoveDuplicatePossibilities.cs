@@ -4,8 +4,11 @@ namespace KillerSudokuSolver
 {
     class RemoveDuplicatePossibilities : Rule
     {
-        //Removes PossibleValues that are no longer possible in connected Houses, because they're already fulfilled by the Value for this Cell
-        public RemoveDuplicatePossibilities(Cell target, float priority)
+		public static int PossibleValuesEliminated = 0;
+		public static int Executions = 0;
+
+		//Removes PossibleValues that are no longer possible in connected Houses, because they're already fulfilled by the Value for this Cell
+		public RemoveDuplicatePossibilities(Cell target, float priority)
         {
 			Target = target;
             Priority = priority;
@@ -13,6 +16,8 @@ namespace KillerSudokuSolver
 
         public override HashSet<Cell> Execute()
 		{
+			Executions++;
+
 			HashSet<Cell> changedCells = new HashSet<Cell>();
 
 			Cell target = Target as Cell;
@@ -21,7 +26,14 @@ namespace KillerSudokuSolver
 			{
 				foreach (House house in target.Houses)
 				{
-					changedCells.UnionWith(house.RemovePossibleValue(target.Value));
+					foreach (Cell cell in house.Cells)
+					{
+						if (cell.RemovePossibleValueIfPresent(target.Value))
+						{
+							PossibleValuesEliminated++;
+							changedCells.Add(cell);
+						}
+					}
 				}
 			}
 

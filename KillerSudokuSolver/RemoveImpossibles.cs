@@ -6,6 +6,9 @@ namespace KillerSudokuSolver
 {
 	class RemoveImpossibles : Rule
     {
+		public static int PossibleValuesEliminated = 0;
+		public static int Executions = 0;
+
 		SortedSet<int>[] AllHousePossibleValues;
 
 		//Removes Values that are could not possibly be used to form the Goal by running all viable permutations and creating a new set of PossibleValues.
@@ -18,6 +21,8 @@ namespace KillerSudokuSolver
 
 		public override HashSet<Cell> Execute()
 		{
+			Executions++;
+
 			Successor = Target.GenerateSuccessor();
 
 			AllHousePossibleValues = new SortedSet<int>[Successor.Cells.Length];
@@ -35,8 +40,11 @@ namespace KillerSudokuSolver
 
 			for (int i = 0; i < Successor.Cells.Length; i++)
 			{
-				if (Successor.Cells[i].SwapPossibleValues(AllHousePossibleValues[i]))
+				int changes = Successor.Cells[i].SwapPossibleValues(AllHousePossibleValues[i]);
+
+				if (changes != 0)
 				{
+					PossibleValuesEliminated += changes;
 					changedCells.Add(Successor.Cells[i]);
 				}
 			}

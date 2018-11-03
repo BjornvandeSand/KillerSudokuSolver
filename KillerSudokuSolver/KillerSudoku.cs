@@ -286,7 +286,7 @@ namespace KillerSudokuSolver
 
 			output += lineLine + "\\" + Environment.NewLine;
 
-			//Builds the lines 
+			//Builds the lines
 			for (int y = maxCellValue - 1; y >= 0; y--)
 			{
 				output += rows[y];

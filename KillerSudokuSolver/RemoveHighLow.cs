@@ -5,8 +5,11 @@ namespace KillerSudokuSolver
 {
     class RemoveHighLow : Rule
     {
-        //Removes Values that are too high or low to be possible with the Cage's sum and returns affected Cells
-        public RemoveHighLow(Cage target, float priority)
+		public static int PossibleValuesEliminated = 0;
+		public static int Executions = 0;
+
+		//Removes Values that are too high or low to be possible with the Cage's sum and returns affected Cells
+		public RemoveHighLow(Cage target, float priority)
         {
             Target = target;
             Priority = priority;
@@ -14,6 +17,8 @@ namespace KillerSudokuSolver
 
         public override HashSet<Cell> Execute()
 		{
+			Executions++;
+
 			Cage target = (Cage) Target.GenerateSuccessor();
 
 			HashSet<Cell> changedCells = new HashSet<Cell>();
@@ -48,7 +53,9 @@ namespace KillerSudokuSolver
 						//Check if this Value is still listed as possible for the Cell and remove it if so
 						if (cell.RemovePossibleValueIfPresent(i))
 						{
-                            if (!changedCells.Contains(cell)) //Check if this Cell isn't already listed as one that should be re-evaluated
+							PossibleValuesEliminated++;
+
+							if (!changedCells.Contains(cell)) //Check if this Cell isn't already listed as one that should be re-evaluated
                             {
 								changedCells.Add(cell); //Add it to the list of upcoming evaluations
                             }
@@ -64,7 +71,9 @@ namespace KillerSudokuSolver
                         //Check if this Value is still listed as possible for the Cell and remove it if so
                         if (cell.RemovePossibleValueIfPresent(i))
                         {
-                            if (!changedCells.Contains(cell)) //Check if this Cell isn't already listed as one that should be re-evaluated
+							PossibleValuesEliminated++;
+
+							if (!changedCells.Contains(cell)) //Check if this Cell isn't already listed as one that should be re-evaluated
                             {
 								changedCells.Add(cell); //Add it to the list of upcoming evaluations
                             }

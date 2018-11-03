@@ -3,15 +3,18 @@ using System.Linq;
 
 namespace KillerSudokuSolver
 {
-    class Cell : House
-    {
+	class Cell : House
+	{
+		public static int PossibleValuesEliminated = 0;
+		public static int Executions = 0;
+
 		public int Value { get; set; } //The final Value for this Cell
 
-        public Column Column { get; set; }
+		public Column Column { get; set; }
 
-        public Row Row { get; set; }
+		public Row Row { get; set; }
 
-        public Diagonal Diagonal { get; set; }
+		public Diagonal Diagonal { get; set; }
 
 		public Block Block { get; set; }
 
@@ -22,25 +25,28 @@ namespace KillerSudokuSolver
 		public new SortedSet<int> PossibleValues { get; set; }
 
 		public Cell(int maxValue, int housesAmount)
-        {
-            Value = 0;
-            PossibleValues = new SortedSet<int>();
-            Houses = new List<House>(housesAmount);
+		{
+			Value = 0;
+			PossibleValues = new SortedSet<int>();
+			Houses = new List<House>(housesAmount);
 
-            for (int i = 1; i <= maxValue; i++)
-            {
-                PossibleValues.Add(i);
-            }
-        }
+			for (int i = 1; i <= maxValue; i++)
+			{
+				PossibleValues.Add(i);
+			}
+		}
 
-        void EvaluatePossibleValues()
-        {
-            if (PossibleValues.Count == 1)
-            {
+		void EvaluatePossibleValues()
+		{
+			Executions++;
+
+			if (PossibleValues.Count == 1)
+			{
+				PossibleValuesEliminated++;
 				Value = PossibleValues.ElementAt(0); //Set the final Value
 				PossibleValues.Clear();
 			}
-        }
+		}
 
 		public bool RemovePossibleValueIfPresent(int i)
 		{
@@ -56,29 +62,34 @@ namespace KillerSudokuSolver
 			return change;
 		}
 
-		public bool SwapPossibleValues(SortedSet<int> possibleValues)
+		public int SwapPossibleValues(SortedSet<int> possibleValues)
 		{
-			bool change = false;
+			int changes = 0;
 
 			if (!PossibleValues.SetEquals(possibleValues))
 			{
-				change = true;
+				changes = PossibleValues.Count - possibleValues.Count;
 				PossibleValues = possibleValues;
 				EvaluatePossibleValues();
 			}
 
-			return change;
+			return changes;
 		}
 
 		//Provides a String representation of this Cell for easy printing
 		public override string ToString()
-        {
-            return Value.ToString();
-        }
+		{
+			return Value.ToString();
+		}
 
 		public override House GenerateSuccessor()
 		{
 			return this;
+		}
+
+		public void Reset()
+		{
+			PossibleValuesEliminated = 0;
 		}
 	}
 }
