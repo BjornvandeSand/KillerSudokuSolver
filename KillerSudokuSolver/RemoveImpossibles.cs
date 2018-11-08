@@ -11,12 +11,11 @@ namespace KillerSudokuSolver
 
 		SortedSet<int>[] AllHousePossibleValues;
 
-		//Removes Values that are could not possibly be used to form the Goal by running all viable permutations and creating a new set of PossibleValues.
+		//Removes Values that  could not possibly be used to form the Goal by running all viable permutations and creating a new set of PossibleValues.
 		public RemoveImpossibles(House target, float priority)
 		{
 			Target = target;
 			Priority = priority;
-			AllHousePossibleValues = new SortedSet<int>[Target.Cells.Length];
 		}
 
 		public override HashSet<Cell> Execute()

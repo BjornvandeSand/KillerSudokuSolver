@@ -6,7 +6,7 @@ namespace KillerSudokuSolver
 	/*
 	* Class written by James McCaffrey
 	* https://visualstudiomagazine.com/articles/2012/11/01/priority-queues-with-c.aspx
-	* Only superficially edited by myself: Bjorn van de Sand
+	* Only superficially edited for my own understanding: Bjorn van de Sand
 	*/
 	public class PriorityQueue<T> where T : IComparable<T>
 	{

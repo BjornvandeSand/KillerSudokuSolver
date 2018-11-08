@@ -61,7 +61,7 @@ namespace KillerSudokuSolver
 					}
 				}
 
-				//DOESN'T TAKE KILLX INTO CONSIDERATION ATM
+				//DOESN'T TAKE KILLERX INTO CONSIDERATION ATM
 				//Diagonal is the potential 5th House
 			}
 
