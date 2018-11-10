@@ -208,10 +208,10 @@ namespace KillerSudokuSolver
 				sum += cage.Goal;
 			}
 
-			//Checks if it equals what the sum of all possible Values should be
+			//Checks if it equals what the sum of all possible Goals should be
 			if (sum != numberOfCells * (maxCellValue + 1) / 2)
 			{
-				Console.WriteLine("Sum of Cages doesn't add up to required sum of Grid");
+				Console.WriteLine("Sum of Cages: " + sum + " doesn't add up to required sum of Grid");
 			}
 
 			//Checks if any Houses are too large
