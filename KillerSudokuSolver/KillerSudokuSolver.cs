@@ -268,23 +268,22 @@ namespace KillerSudokuSolver
 				RemoveImpossibles.PossibleValuesEliminated +
 				Cell.PossibleValuesEliminated;
 
-			Console.WriteLine("A total of " + rulesEvaluated + " rules were evaluated.");
+			Console.WriteLine("A total of " + rulesEvaluated + " Rules were evaluated.");
 
 			Console.WriteLine(Environment.NewLine + "The following Rules were executed this number of times:");
-			Console.WriteLine(RemoveDuplicatePossibilities.Executions + " by RemoveDuplicatePossibilities Rules");
-			Console.WriteLine(RemoveHighLow.Executions + " by RemoveHighLow Rules");
-			Console.WriteLine(OnlyPossibilityLeftInHouse.Executions + " by OnlyPossibilityLeftInHouse Rules");
-			Console.WriteLine(NCageN.Executions + " by NCageN Rules");
-			Console.WriteLine(RemoveImpossibles.Executions + " by RemoveImpossibles Rules");
+			Console.WriteLine(RemoveDuplicatePossibilities.Executions + " for RemoveDuplicatePossibilities Rule");
+			Console.WriteLine(RemoveHighLow.Executions + " for RemoveHighLow Rule");
+			Console.WriteLine(OnlyPossibilityLeftInHouse.Executions + " for OnlyPossibilityLeftInHouse Rule");
+			Console.WriteLine(NCageN.Executions + " for NCageN Rule");
+			Console.WriteLine(RemoveImpossibles.Executions + " for RemoveImpossibles Rule");
 
-			Console.WriteLine(Environment.NewLine + "The following Rules were responsible for this number of Possible Value eliminations:");
-			Console.WriteLine(RemoveDuplicatePossibilities.PossibleValuesEliminated + " by RemoveDuplicatePossibilities Rules");
-			Console.WriteLine(RemoveHighLow.PossibleValuesEliminated + " by RemoveHighLow Rules");
-			Console.WriteLine(OnlyPossibilityLeftInHouse.PossibleValuesEliminated + " by OnlyPossibilityLeftInHouse Rules");
-			Console.WriteLine(NCageN.PossibleValuesEliminated + " by NCageN Rules");
-			Console.WriteLine(RemoveImpossibles.PossibleValuesEliminated + " by RemoveImpossibles Rules");
-
-			Console.WriteLine(Environment.NewLine + Cell.PossibleValuesEliminated + " by " + Cell.PossibleValuesEliminated + " automatic removal of the last Possible Value in Cell calls");
+			Console.WriteLine(Environment.NewLine + "The following Rules were responsible for this number of Possible Value eliminations: ");
+			Console.WriteLine(RemoveDuplicatePossibilities.PossibleValuesEliminated + " by RemoveDuplicatePossibilities Rule executions");
+			Console.WriteLine(RemoveHighLow.PossibleValuesEliminated + " by RemoveHighLow Rule executions");
+			Console.WriteLine(OnlyPossibilityLeftInHouse.PossibleValuesEliminated + " by OnlyPossibilityLeftInHouse Rule executions");
+			Console.WriteLine(NCageN.PossibleValuesEliminated + " by NCageN Rule executions");
+			Console.WriteLine(RemoveImpossibles.PossibleValuesEliminated + " by RemoveImpossibles Rule executions");
+			Console.WriteLine(Environment.NewLine + Cell.PossibleValuesEliminated + " by LastPossibleValue Rule executions");
 
 			Console.WriteLine("In total " + totalValuesEliminated + " Possible Values were eliminated.");
 

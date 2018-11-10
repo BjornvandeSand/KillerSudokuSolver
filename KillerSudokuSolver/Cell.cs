@@ -36,7 +36,8 @@ namespace KillerSudokuSolver
 			}
 		}
 
-		void EvaluatePossibleValues()
+		//This is essentially a Rule
+		void LastPossibleValue()
 		{
 			Executions++;
 
@@ -56,7 +57,7 @@ namespace KillerSudokuSolver
 			{
 				change = true;
 				PossibleValues.Remove(i);
-				EvaluatePossibleValues();
+				LastPossibleValue();
 			}
 
 			return change;
@@ -70,7 +71,7 @@ namespace KillerSudokuSolver
 			{
 				changes = PossibleValues.Count - possibleValues.Count;
 				PossibleValues = possibleValues;
-				EvaluatePossibleValues();
+				LastPossibleValue();
 			}
 
 			return changes;
